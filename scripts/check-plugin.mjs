@@ -64,6 +64,20 @@ for (const path of sources) {
   if (/insertAdjacentHTML|createContextualFragment|document\.write/.test(read(path))) fail(`${path}: parses HTML into the live DOM`);
 }
 
+// 7-9. Warnings raised by the community-plugin review of 0.1.0.
+for (const path of sources) {
+  const source = read(path);
+  // Timers must come from `window` so they run in popout windows.
+  const timer = /(?<![.\w])(setTimeout|clearTimeout|setInterval|clearInterval)\s*\(/.exec(source);
+  if (timer !== null) fail(`${path}: calls ${timer[1]}() instead of window.${timer[1]}()`);
+  // obsidianmd/prefer-create-el
+  if (/\.createElement\(/.test(source)) fail(`${path}: uses createElement instead of createEl`);
+  // Settings search on Obsidian 1.13+ only sees declarative definitions.
+  if (/extends PluginSettingTab/.test(source) && !/getSettingDefinitions\(/.test(source)) {
+    fail(`${path}: PluginSettingTab does not implement getSettingDefinitions()`);
+  }
+}
+
 if (failures.length > 0) {
   console.error("plugin checks failed:");
   for (const message of failures) console.error(`  - ${message}`);

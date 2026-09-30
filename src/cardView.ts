@@ -7,37 +7,21 @@ export interface CardViewOptions {
   invalidText: string;
 }
 
+const imageAttrs = (src: string) => ({ src, alt: "", loading: "lazy", referrerpolicy: "no-referrer" });
+
 /**
- * Builds the card with createElement/textContent only. Everything in a card
- * came from a web page, so none of it may be parsed as markup.
+ * Builds the card through createEl's `text` and `attr` only. Everything in a
+ * card came from a web page, so none of it may be parsed as markup.
  */
 export function renderCard(container: HTMLElement, data: CardData | null, options: CardViewOptions): void {
-  const doc = container.ownerDocument;
-  const add = <K extends keyof HTMLElementTagNameMap>(tag: K, className: string, parent: HTMLElement) => {
-    const node = doc.createElement(tag);
-    if (className !== "") node.className = className;
-    parent.appendChild(node);
-    return node;
-  };
-  const addImage = (className: string, src: string, parent: HTMLElement) => {
-    const img = add("img", className, parent);
-    img.setAttribute("src", src);
-    img.setAttribute("alt", "");
-    img.setAttribute("loading", "lazy");
-    img.setAttribute("referrerpolicy", "no-referrer");
-    return img;
-  };
-
   const url = safeHttpUrl(data?.url);
   if (data === null || url === null) {
-    add("div", "loc-card-invalid", container).textContent = options.invalidText;
+    container.createDiv({ cls: "loc-card-invalid", text: options.invalidText });
     return;
   }
   const host = new URL(url).hostname;
 
-  const card = add("a", "loc-card", container);
-  card.setAttribute("href", url);
-  card.setAttribute("aria-label", url);
+  const card = container.createEl("a", { cls: "loc-card", attr: { href: url, "aria-label": url } });
   card.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -45,21 +29,21 @@ export function renderCard(container: HTMLElement, data: CardData | null, option
   });
   card.addEventListener("contextmenu", (event) => options.onMenu(event));
 
-  const body = add("div", "loc-card-body", card);
-  add("div", "loc-card-title", body).textContent = data.title ?? data.site ?? host;
-  if (data.description !== undefined) add("div", "loc-card-description", body).textContent = data.description;
+  const body = card.createDiv({ cls: "loc-card-body" });
+  body.createDiv({ cls: "loc-card-title", text: data.title ?? data.site ?? host });
+  if (data.description !== undefined) body.createDiv({ cls: "loc-card-description", text: data.description });
 
-  const meta = add("div", "loc-card-meta", body);
+  const meta = body.createDiv({ cls: "loc-card-meta" });
   const favicon = safeHttpUrl(data.favicon);
   if (favicon !== null) {
-    const icon = addImage("loc-card-favicon", favicon, meta);
+    const icon = meta.createEl("img", { cls: "loc-card-favicon", attr: imageAttrs(favicon) });
     icon.addEventListener("error", () => icon.remove());
   }
-  add("span", "loc-card-host", meta).textContent = host;
+  meta.createSpan({ cls: "loc-card-host", text: host });
 
   const image = safeHttpUrl(data.image);
   if (image !== null) {
-    const thumb = add("div", "loc-card-thumb", card);
-    addImage("", image, thumb).addEventListener("error", () => thumb.remove());
+    const thumb = card.createDiv({ cls: "loc-card-thumb" });
+    thumb.createEl("img", { attr: imageAttrs(image) }).addEventListener("error", () => thumb.remove());
   }
 }
