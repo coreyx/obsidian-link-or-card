@@ -7,16 +7,20 @@ on:
 
 permissions:
   contents: write
+  # Signing and storing build provenance for the release assets (actions/attest).
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
 
       - run: npm ci
@@ -29,6 +33,16 @@ jobs:
             echo "tag ${GITHUB_REF_NAME} does not match manifest version ${MANIFEST_VERSION}"
             exit 1
           fi
+
+      # Lets anyone check that the published files were built here from this commit:
+      #   gh attestation verify main.js --repo yut0takagi/obsidian-link-or-card
+      - name: Attest build provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
 
       - name: Create the release
         env:

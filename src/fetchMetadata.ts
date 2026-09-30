@@ -17,18 +17,21 @@ const header = (headers: Record<string, string>, name: string): string | undefin
   return key === undefined ? undefined : headers[key];
 };
 
-/** requestUrl has no timeout option, and a hung request would leave the paste unresolved forever. */
+/**
+ * requestUrl has no timeout option, and a hung request would leave the paste
+ * unresolved forever. Timers come from `window` so they also run in popout windows.
+ */
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`timed out after ${ms}ms`)), ms);
+    const timer = window.setTimeout(() => reject(new Error(`timed out after ${ms}ms`)), ms);
     promise.then(
       (value) => {
-        clearTimeout(timer);
+        window.clearTimeout(timer);
         resolve(value);
       },
       (error: unknown) => {
-        clearTimeout(timer);
-        reject(error);
+        window.clearTimeout(timer);
+        reject(error instanceof Error ? error : new Error(String(error)));
       },
     );
   });

@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
+import "./obsidianDom";
 import { renderCard } from "../src/cardView";
 import type { CardData } from "../src/cardBlock";
 
