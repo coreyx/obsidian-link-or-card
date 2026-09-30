@@ -1,0 +1,110 @@
+.loc-card {
+  display: flex;
+  align-items: stretch;
+  min-height: 88px;
+  margin: 4px 0;
+  overflow: hidden;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m, 8px);
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.loc-card:hover {
+  background-color: var(--background-modifier-hover);
+  border-color: var(--background-modifier-border-hover, var(--background-modifier-border));
+  color: var(--text-normal);
+  text-decoration: none;
+}
+
+.loc-card-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 16px;
+}
+
+.loc-card-title,
+.loc-card-description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+}
+
+.loc-card-title {
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-semibold, 600);
+  line-height: 1.4;
+}
+
+.loc-card-description {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  line-height: 1.5;
+}
+
+.loc-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+.loc-card .loc-card-favicon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  border-radius: 2px;
+}
+
+.loc-card-host {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The image is taken out of flow so a tall thumbnail cannot stretch the card; the text sets the height. */
+.loc-card-thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 30%;
+  min-width: 96px;
+  max-width: 220px;
+  background-color: var(--background-secondary);
+}
+
+.loc-card .loc-card-thumb img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.is-mobile .loc-card-thumb {
+  width: 88px;
+  min-width: 88px;
+}
+
+.loc-card-invalid {
+  padding: 8px 12px;
+  border: 1px dashed var(--background-modifier-border);
+  border-radius: var(--radius-s, 4px);
+  color: var(--text-error);
+  font-size: var(--font-ui-small);
+}

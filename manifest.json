@@ -1,0 +1,10 @@
+{
+  "id": "link-or-card",
+  "name": "Link or Card",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Paste a URL and pick how it lands: a preview card with title, description and thumbnail, a Markdown link with the page title, or the plain URL.",
+  "author": "Yuto Takagi",
+  "authorUrl": "https://github.com/yut0takagi",
+  "isDesktopOnly": false
+}
