@@ -11,9 +11,12 @@ export interface Strings {
   urlMoved: string;
   noLinkAtCursor: string;
   commandChangeStyle: string;
+  commandPasteAndChoose: string;
+  clipboardUnreadable: string;
   invalidCard: string;
-  settingAskOnPasteName: string;
-  settingAskOnPasteDesc: string;
+  settingPasteStyleName: string;
+  settingPasteStyleDesc: string;
+  pasteStyleAsk: string;
   settingIgnoredUrlsName: string;
   settingIgnoredUrlsDesc: string;
   settingPreserveSelectionName: string;
@@ -33,13 +36,16 @@ const en: Strings = {
   urlMoved: "The URL was edited while the page was loading, so nothing was changed.",
   noLinkAtCursor: "There is no link at the cursor.",
   commandChangeStyle: "Change link style at cursor",
+  commandPasteAndChoose: "Paste URL and choose style",
+  clipboardUnreadable: "Couldn't read the clipboard.",
   invalidCard: 'This link card has no valid "url".',
-  settingAskOnPasteName: "Ask when pasting a URL",
-  settingAskOnPasteDesc:
-    "Show a menu to choose card, link or plain URL. When off, pasting works as usual and you can still convert with the command or the right-click menu.",
-  settingIgnoredUrlsName: "Don't ask for these URLs",
+  settingPasteStyleName: "When pasting a URL",
+  settingPasteStyleDesc:
+    'What a pasted URL turns into. Plain URL leaves the paste alone. To choose for a single paste, use the command "Paste URL and choose style" (Ctrl/Cmd+Shift+V unless you change it under Hotkeys).',
+  pasteStyleAsk: "Ask with a menu",
+  settingIgnoredUrlsName: "Ignore these URLs",
   settingIgnoredUrlsDesc:
-    "One per line. A domain such as example.com also covers its subdomains; add a path, as in github.com/my-org, to cover only part of a site. Matching URLs are pasted as usual, without the menu.",
+    "One per line. A domain such as example.com also covers its subdomains; add a path, as in github.com/my-org, to cover only part of a site. Pasting a matching URL leaves it as it is.",
   settingPreserveSelectionName: "Preserve selection as title",
   settingPreserveSelectionDesc: "Whether to prefer selected text as title over fetched title when pasting.",
 };
@@ -57,13 +63,16 @@ const ja: Strings = {
   urlMoved: "取得中にURLが編集されたので、変換を取りやめました。",
   noLinkAtCursor: "カーソル位置にリンクがありません。",
   commandChangeStyle: "カーソル位置のリンクの表示形式を変える",
+  commandPasteAndChoose: "URLを貼り付けて形式を選ぶ",
+  clipboardUnreadable: "クリップボードを読み取れませんでした。",
   invalidCard: "このリンクカードには有効な url がありません。",
-  settingAskOnPasteName: "URLを貼り付けたときに形式を選ぶ",
-  settingAskOnPasteDesc:
-    "カード・リンク・URLのままから選ぶメニューを出します。オフにすると通常の貼り付けになり、コマンドか右クリックメニューで後から変換できます。",
-  settingIgnoredUrlsName: "メニューを出さないURL",
+  settingPasteStyleName: "URLを貼り付けたとき",
+  settingPasteStyleDesc:
+    "貼り付けたURLをどの形式にするかを選びます。「URLのまま」は通常の貼り付けです。貼り付けるたびに選びたいときは、コマンド「URLを貼り付けて形式を選ぶ」を使います（ホットキーを変えていなければ Ctrl/Cmd+Shift+V）。",
+  pasteStyleAsk: "メニューで選ぶ",
+  settingIgnoredUrlsName: "変換しないURL",
   settingIgnoredUrlsDesc:
-    "1行に1つ入力します。example.com のようなドメインはサブドメインも対象になり、github.com/my-org のようにパスを付けるとサイトの一部だけが対象になります。一致するURLはメニューを出さずに通常どおり貼り付けます。",
+    "1行に1つ入力します。example.com のようなドメインはサブドメインも対象になり、github.com/my-org のようにパスを付けるとサイトの一部だけが対象になります。一致するURLは貼り付けてもそのままになります。",
   settingPreserveSelectionName: "選択したテキストをタイトルにする",
   settingPreserveSelectionDesc: "貼り付けるとき、取得したタイトルよりも選択中のテキストを優先してタイトルにします。",
 };

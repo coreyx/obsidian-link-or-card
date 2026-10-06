@@ -1,6 +1,6 @@
 # Link or Card
 
-Paste a URL and pick how it lands in your note:
+Paste a URL and it lands in your note as a titled link. Press **Ctrl/Cmd+Shift+V** instead to pick how it lands:
 
 | Choice | Result |
 | --- | --- |
@@ -8,15 +8,25 @@ Paste a URL and pick how it lands in your note:
 | **Link** | `[Page title](https://…)` — a Markdown link with the title filled in |
 | **Plain URL** | The URL exactly as pasted |
 
-The URL is pasted immediately and the menu opens at the cursor. Pressing Esc or clicking elsewhere keeps the plain URL, so the plugin never gets in the way of an ordinary paste.
+The URL is pasted immediately, then restyled once the page has been read. If the page cannot be read, or you close the menu, the plain URL stays, so the plugin never gets in the way of an ordinary paste.
 
 ## Usage
 
 ### When pasting
 
-Copy a URL, paste it into a note, and choose **Card**, **Link** or **Plain URL** from the menu.
+Copy a URL and paste it into a note. It becomes a **Link**: the URL appears at once and turns into `[Page title](https://…)` when the title arrives.
 
-The menu does not appear when the paste is clearly something else:
+What a normal paste produces is up to you: [**When pasting a URL**](#settings) can be set to **Link**, **Card**, **Plain URL** or **Ask with a menu**.
+
+### Choosing for one paste
+
+Press **Ctrl+Shift+V** (**Cmd+Shift+V** on macOS), or run the command **Paste URL and choose style**, to paste the URL and choose **Card**, **Link** or **Plain URL** from a menu at the cursor. This works whatever the paste setting is, and for URLs on your ignore list too.
+
+The shortcut takes the place of Obsidian's own *paste as plain text* on the same keys. Clipboard content that is not a single URL is still pasted as plain text, and you can change or remove the shortcut under *Settings → Hotkeys*.
+
+### When a paste is left alone
+
+A normal paste is not restyled when it is clearly something else:
 
 - text is selected and [**Preserve selection as title**](#settings) is off (the paste is left to Obsidian)
 - the cursor is in a code block, inline code or the frontmatter
@@ -53,10 +63,18 @@ site: Obsidian
 
 ## Settings
 
-- **Ask when pasting a URL** — turn off to paste URLs normally. The right-click menu and the command still work.
-- **Don't ask for these URLs** — URLs that should always paste normally, one per line. The right-click menu and the command still work on them.
+- **When pasting a URL** — what a normal paste turns a URL into. The shortcut, the right-click menu and the commands work with every choice.
 
-  | Entry | Skips the menu for |
+  | Choice | A pasted URL |
+  | --- | --- |
+  | **Link** (default) | becomes a Markdown link with the page title |
+  | **Card** | becomes a preview card |
+  | **Plain URL** | is left alone; the plugin does nothing on paste |
+  | **Ask with a menu** | is pasted, and a menu offers Card, Link or Plain URL |
+
+- **Ignore these URLs** — URLs that a normal paste should always leave alone, one per line. The shortcut, the right-click menu and the commands still work on them.
+
+  | Entry | Leaves alone |
   | --- | --- |
   | `example.com` | `example.com` and its subdomains, such as `docs.example.com` |
   | `github.com/my-org` | that path and everything under it, but not `github.com/my-organization` |
@@ -64,15 +82,21 @@ site: Obsidian
 
   `https://` and a leading `*.` are accepted and ignored, so `https://*.example.com/` means the same as `example.com`.
 - **Preserve selection as title** — on by default. Pasting a URL over selected text keeps that text as the title instead of the page's own title:
-  - the selection becomes `[selected text](https://…)` right away, and the menu opens as usual
-  - **Card** builds a card titled with the selected text; **Link** keeps the link as it is, with no request; **Plain URL** replaces the selection with the URL
-  - closing the menu keeps the link
+  - the selection becomes `[selected text](https://…)` right away
+  - **Link** keeps that link as it is, with no request; **Card** builds a card titled with the selected text; **Plain URL** replaces the selection with the URL
+  - closing the menu, when there is one, keeps the link
 
-  The paste is still left to Obsidian when the selection spans more than one line, already contains a link, or there are several selections. This setting needs **Ask when pasting a URL** to be on. Turn it off to leave every paste over a selection to Obsidian.
+  The paste is still left to Obsidian when the selection spans more than one line, already contains a link, or there are several selections. Turn the setting off to leave every paste over a selection to Obsidian.
 
 ## Network use
 
-To build a card or a titled link, the plugin sends one `GET` request to the URL you chose, using Obsidian's `requestUrl`, and reads the page's `<title>`, Open Graph and Twitter card tags. Nothing is sent anywhere else, and no request is made when you choose **Plain URL** or close the menu.
+To build a card or a titled link, the plugin sends one `GET` request to the URL, using Obsidian's `requestUrl`, and reads the page's `<title>`, Open Graph and Twitter card tags. Nothing is sent anywhere else.
+
+With **When pasting a URL** set to **Link** (the default) or **Card**, that request is made as soon as you paste a URL, without asking. No request is made when:
+
+- the URL is on your ignore list
+- the setting is **Plain URL**, or it is **Ask with a menu** and you choose **Plain URL** or close the menu
+- you paste over selected text and the result is a link, since the selection is the title
 
 Card images and icons are loaded from the sites that host them, with `referrerpolicy="no-referrer"`.
 

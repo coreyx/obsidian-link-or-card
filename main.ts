@@ -18,8 +18,9 @@ import type { Requester } from "./src/fetchMetadata";
 import { getStrings } from "./src/i18n";
 import type { Strings } from "./src/i18n";
 import { formatMarkdownLink } from "./src/markdownLink";
-import { DEFAULT_SETTINGS, LinkOrCardSettingTab } from "./src/settings";
-import type { LinkOrCardSettings } from "./src/settings";
+import { LinkOrCardSettingTab } from "./src/settings";
+import { DEFAULT_SETTINGS, resolveSettings } from "./src/settingsData";
+import type { LinkOrCardSettings } from "./src/settingsData";
 import { isIgnoredUrl, parsePastedUrl, safeHttpUrl } from "./src/url";
 
 type Style = "card" | "link" | "plain";
@@ -105,12 +106,18 @@ export default class LinkOrCardPlugin extends Plugin {
       },
     });
 
+    this.addCommand({
+      id: "paste-and-choose-style",
+      name: this.strings.commandPasteAndChoose,
+      hotkeys: [{ modifiers: ["Mod", "Shift"], key: "v" }],
+      editorCallback: (editor, info) => void this.pasteAndChoose({ editor, info }),
+    });
+
     this.addSettingTab(new LinkOrCardSettingTab(this.app, this));
   }
 
   async loadSettings(): Promise<void> {
-    const saved = (await this.loadData()) as Partial<LinkOrCardSettings> | null;
-    this.settings = { ...DEFAULT_SETTINGS, ...saved };
+    this.settings = resolveSettings(await this.loadData());
   }
 
   async saveSettings(): Promise<void> {
@@ -118,27 +125,58 @@ export default class LinkOrCardPlugin extends Plugin {
   }
 
   private handlePaste(evt: ClipboardEvent, context: EditorContext): void {
-    if (!this.settings.askOnPaste || evt.defaultPrevented) return;
+    const style = this.settings.pasteStyle;
+    if (style === "plain" || evt.defaultPrevented) return;
     const clipboard = evt.clipboardData;
     if (clipboard === null || clipboard.files.length > 0) return;
     const url = parsePastedUrl(clipboard.getData("text/plain"));
-    const { editor } = context;
     if (url === null || isIgnoredUrl(url, this.settings.ignoredUrls)) return;
-    const selected = editor.somethingSelected() ? this.selectedTitle(editor) : undefined;
-    if (selected === null) return;
-    const from = selected?.from ?? editor.getCursor();
-    if (!canTransformPaste(editor, from.line, from.ch)) return;
+    const target = this.insertPastedUrl(context.editor, url);
+    if (target === null) return;
 
-    // Paste right away, so closing the menu leaves an ordinary paste behind: the URL, or a link titled with the selection.
     evt.preventDefault();
+    if (style === "ask") this.showPasteMenu(context, target);
+    else void this.applyStyle(context, target, style);
+  }
+
+  /** The command behind the shortcut: asks every time, whatever the paste setting or the ignore list says. */
+  private async pasteAndChoose(context: EditorContext): Promise<void> {
+    let text: string;
+    try {
+      text = await activeWindow.navigator.clipboard.readText();
+    } catch {
+      new Notice(this.strings.clipboardUnreadable);
+      return;
+    }
+    if (text === "") return;
+    const url = parsePastedUrl(text);
+    const target = url === null ? null : this.insertPastedUrl(context.editor, url);
+    // Anything other than a URL we may restyle is pasted as the plain text it is.
+    if (target === null) context.editor.replaceSelection(text);
+    else this.showPasteMenu(context, target);
+  }
+
+  /**
+   * Pastes the URL at the cursor, or over the selection as a link titled with it. This happens
+   * before any menu or fetch, so an ordinary paste is left behind whatever comes next.
+   * Null, with nothing pasted, when the paste is not ours to restyle.
+   */
+  private insertPastedUrl(editor: Editor, url: string): Target | null {
+    const selected = editor.somethingSelected() ? this.selectedTitle(editor) : undefined;
+    if (selected === null) return null;
+    const from = selected?.from ?? editor.getCursor();
+    if (!canTransformPaste(editor, from.line, from.ch)) return null;
+
     const pasted = selected === undefined ? url : formatMarkdownLink(selected.title, url);
     editor.replaceRange(pasted, from, selected?.to);
     const to = { line: from.line, ch: from.ch + pasted.length };
     editor.setCursor(to);
-    const target: Target =
-      selected === undefined
-        ? { kind: "bare", from, to, url }
-        : { kind: "markdown", from, to, url, text: selected.title, keepText: true };
+    return selected === undefined
+      ? { kind: "bare", from, to, url }
+      : { kind: "markdown", from, to, url, text: selected.title, keepText: true };
+  }
+
+  private showPasteMenu(context: EditorContext, target: Target): void {
     this.showMenuAtCursor(context, target, ["card", "link", "plain"], this.pasteLabels());
   }
 

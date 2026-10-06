@@ -1,19 +1,17 @@
 import { PluginSettingTab, Setting } from "obsidian";
 import type { App, SettingDefinitionItem } from "obsidian";
 import type LinkOrCardPlugin from "../main";
+import type { Strings } from "./i18n";
+import { DEFAULT_SETTINGS } from "./settingsData";
+import type { PasteStyle } from "./settingsData";
 
-export interface LinkOrCardSettings {
-  askOnPaste: boolean;
-  /** One entry per line, as typed; see isIgnoredUrl() for how an entry matches. */
-  ignoredUrls: string;
-  preserveSelectionAsTitle: boolean;
-}
-
-export const DEFAULT_SETTINGS: LinkOrCardSettings = {
-  askOnPaste: true,
-  ignoredUrls: "",
-  preserveSelectionAsTitle: true,
-};
+/** In the order the dropdown lists them. */
+const pasteStyleOptions = (t: Strings): Record<PasteStyle, string> => ({
+  link: t.menuLink,
+  card: t.menuCard,
+  plain: t.menuPlain,
+  ask: t.pasteStyleAsk,
+});
 
 const IGNORED_URLS_PLACEHOLDER = "example.com\ngithub.com/my-org";
 const IGNORED_URLS_ROWS = 4;
@@ -35,9 +33,14 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
     const t = this.plugin.strings;
     return [
       {
-        name: t.settingAskOnPasteName,
-        desc: t.settingAskOnPasteDesc,
-        control: { type: "toggle", key: "askOnPaste", defaultValue: DEFAULT_SETTINGS.askOnPaste },
+        name: t.settingPasteStyleName,
+        desc: t.settingPasteStyleDesc,
+        control: {
+          type: "dropdown",
+          key: "pasteStyle",
+          defaultValue: DEFAULT_SETTINGS.pasteStyle,
+          options: pasteStyleOptions(t),
+        },
       },
       {
         name: t.settingIgnoredUrlsName,
@@ -69,13 +72,16 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName(t.settingAskOnPasteName)
-      .setDesc(t.settingAskOnPasteDesc)
-      .addToggle((toggle) =>
-        toggle.setValue(this.plugin.settings.askOnPaste).onChange(async (value) => {
-          this.plugin.settings.askOnPaste = value;
-          await this.plugin.saveSettings();
-        }),
+      .setName(t.settingPasteStyleName)
+      .setDesc(t.settingPasteStyleDesc)
+      .addDropdown((dropdown) =>
+        dropdown
+          .addOptions(pasteStyleOptions(t))
+          .setValue(this.plugin.settings.pasteStyle)
+          .onChange(async (value) => {
+            this.plugin.settings.pasteStyle = value as PasteStyle;
+            await this.plugin.saveSettings();
+          }),
       );
 
     new Setting(containerEl)
