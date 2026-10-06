@@ -4,6 +4,23 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-05
+
+### Added
+
+- Command **Paste URL and choose style**, bound to Ctrl/Cmd+Shift+V by default. It pastes the URL and opens the Card / Link / Plain URL menu, whatever the paste setting is and even for URLs on the ignore list. Clipboard content that is not a single URL is pasted as plain text. The shortcut takes the place of Obsidian's own paste as plain text on the same keys and can be changed under Hotkeys.
+- **When pasting a URL** setting, with the choices Link, Card, Plain URL and Ask with a menu.
+
+### Changed
+
+- A pasted URL now becomes a titled link straight away instead of opening the menu. Set **When pasting a URL** to **Ask with a menu** to get the menu on every paste, as before.
+- With the default setting, the page behind a pasted URL is requested as soon as you paste, without asking first. URLs on the ignore list are never requested on paste.
+- **Don't ask for these URLs** is renamed **Ignore these URLs**. The list itself is kept.
+
+### Removed
+
+- **Ask when pasting a URL** setting, replaced by **When pasting a URL**. If you had turned it off, the new setting starts as **Plain URL**, so pasting still does nothing; otherwise it starts as **Link**.
+
 ## [0.3.0] - 2026-10-05
 
 ### Added
@@ -48,7 +65,8 @@ First release.
 - **Ask when pasting a URL** setting.
 - English and Japanese interface text.
 
-[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.4.0...HEAD
+[0.4.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/coreyx/obsidian-link-or-card/releases/tag/0.2.0
 [0.1.1]: https://github.com/yut0takagi/obsidian-link-or-card/releases/tag/0.1.1

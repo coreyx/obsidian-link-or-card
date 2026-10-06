@@ -1,23 +1,33 @@
-# Link or Card 0.3.0
+# Link or Card 0.4.0
 
-## Keep your selected text as the title
+## Pasting a URL now makes a link, without asking
 
-Select some text, paste a URL over it, and the text you selected is now the title, instead of whatever title the page gives itself.
+Paste a URL and it becomes a titled link straight away: the URL appears at once and turns into `[Page title](https://…)` when the title arrives. No menu opens. If the page cannot be read, the plain URL stays and a notice tells you.
 
-When you paste a URL over a selection:
+## Ctrl/Cmd+Shift+V to choose
 
-- the selection becomes `[selected text](https://…)` right away, and the Card / Link / Plain URL menu opens
-- **Card** builds a card titled with your selected text
-- **Link** keeps the link as it is, without contacting the site
-- **Plain URL** replaces the selection with the URL
-- closing the menu keeps the link
+When you want something other than a link, press **Ctrl+Shift+V** (**Cmd+Shift+V** on macOS) instead. The URL is pasted and the **Card** / **Link** / **Plain URL** menu opens at the cursor.
 
-Spaces at the edges of the selection stay outside the link.
+- It is a command, **Paste URL and choose style**, so you can change or remove the shortcut under *Settings → Hotkeys*.
+- It works whatever the paste setting is, and for URLs on your ignore list too.
+- These keys are Obsidian's own *paste as plain text*. The plugin takes them over, and still pastes plain text when the clipboard is not a single URL.
 
-This is controlled by the new **Preserve selection as title** setting, which is on by default. Turn it off to leave pastes over a selection to Obsidian, as in earlier versions.
+## Choose what a normal paste does
 
-The paste is also left to Obsidian when the selection spans more than one line, already contains a link, or there are several selections. The setting needs **Ask when pasting a URL** to be on, and URLs on your ignore list still paste normally.
+The **Ask when pasting a URL** toggle is replaced by **When pasting a URL**:
+
+| Choice | A pasted URL |
+| --- | --- |
+| **Link** (default) | becomes a Markdown link with the page title |
+| **Card** | becomes a preview card |
+| **Plain URL** | is left alone; the plugin does nothing on paste |
+| **Ask with a menu** | is pasted, and a menu offers Card, Link or Plain URL, as in earlier versions |
+
+**Don't ask for these URLs** is now called **Ignore these URLs**. Your list is kept.
 
 ## Upgrading
 
-Pasting a URL over selected text behaves differently after this update, because the new setting is on by default. Turn off **Preserve selection as title** if you prefer the old behaviour.
+- **Pasting behaves differently.** To get the menu on every paste again, set **When pasting a URL** to **Ask with a menu**.
+- **If you had turned off "Ask when pasting a URL"**, the new setting starts as **Plain URL**, so pasting still does nothing.
+- **Pages are now requested as soon as you paste.** With **Link** or **Card**, the plugin contacts the pasted URL without asking first. Add sites to **Ignore these URLs**, or choose **Plain URL** or **Ask with a menu**, if you do not want that.
+- **Ctrl/Cmd+Shift+V no longer reaches Obsidian's paste as plain text** while the plugin's shortcut is bound to it. Remove the shortcut under *Settings → Hotkeys* to get it back.
