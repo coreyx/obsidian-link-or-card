@@ -22,6 +22,7 @@ The menu does not appear when the paste is clearly something else:
 - the cursor is in a code block, inline code or the frontmatter
 - the URL is being typed into Markdown or HTML syntax, such as right after `](`, `<` or `href="`
 - the clipboard holds more than a single URL
+- the URL is on your [ignore list](#settings)
 
 ### Changing it later
 
@@ -53,6 +54,15 @@ site: Obsidian
 ## Settings
 
 - **Ask when pasting a URL** — turn off to paste URLs normally. The right-click menu and the command still work.
+- **Don't ask for these URLs** — URLs that should always paste normally, one per line. The right-click menu and the command still work on them.
+
+  | Entry | Skips the menu for |
+  | --- | --- |
+  | `example.com` | `example.com` and its subdomains, such as `docs.example.com` |
+  | `github.com/my-org` | that path and everything under it, but not `github.com/my-organization` |
+  | `localhost:3000` | that port only |
+
+  `https://` and a leading `*.` are accepted and ignored, so `https://*.example.com/` means the same as `example.com`.
 
 ## Network use
 
@@ -61,6 +71,17 @@ To build a card or a titled link, the plugin sends one `GET` request to the URL 
 Card images and icons are loaded from the sites that host them, with `referrerpolicy="no-referrer"`.
 
 Some sites return little or no metadata to requests that are not from a browser. The card then falls back to the host name, and the link falls back to the plain URL with a notice.
+
+## Installing with BRAT
+
+[BRAT](https://github.com/TfTHacker/obsidian42-brat) installs the plugin straight from this repository and keeps it up to date.
+
+1. Install **BRAT** from *Settings → Community plugins* and enable it.
+2. Open *Settings → BRAT* and choose **Add beta plugin**.
+3. Paste `https://github.com/coreyx/obsidian-link-or-card`, pick the latest version and choose **Add plugin**.
+4. Enable **Link or Card** under *Settings → Community plugins*.
+
+BRAT checks for new releases when Obsidian starts. To check right away, run the command **BRAT: Check for updates to all beta plugins and UPDATE**.
 
 ## Installing manually
 
