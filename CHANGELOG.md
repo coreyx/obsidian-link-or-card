@@ -4,6 +4,12 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-05
+
+### Added
+
+- **Preserve selection as title** setting, on by default. Pasting a URL over selected text turns the selection into a link titled with that text and opens the menu; choosing **Card** uses the selected text as the card title instead of the fetched one. Turn the setting off to leave pastes over a selection to Obsidian, as before.
+
 ## [0.2.0] - 2026-10-05
 
 ### Added
@@ -42,7 +48,8 @@ First release.
 - **Ask when pasting a URL** setting.
 - English and Japanese interface text.
 
-[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.2.0...HEAD
+[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/coreyx/obsidian-link-or-card/releases/tag/0.2.0
 [0.1.1]: https://github.com/yut0takagi/obsidian-link-or-card/releases/tag/0.1.1
 [0.1.0]: https://github.com/yut0takagi/obsidian-link-or-card/releases/tag/0.1.0

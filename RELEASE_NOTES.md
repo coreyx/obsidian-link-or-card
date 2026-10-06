@@ -1,25 +1,23 @@
-# Link or Card 0.2.0
+# Link or Card 0.3.0
 
-## Skip the menu for URLs you choose
+## Keep your selected text as the title
 
-Some URLs you always want pasted as they are: your own wiki, a local dev server, an internal tracker. The new **Don't ask for these URLs** setting takes a list of them, one per line, and pastes anything on it normally, without the Card / Link / Plain URL menu.
+Select some text, paste a URL over it, and the text you selected is now the title, instead of whatever title the page gives itself.
 
-| Entry | Skips the menu for |
-| --- | --- |
-| `example.com` | `example.com` and its subdomains, such as `docs.example.com` |
-| `github.com/my-org` | that path and everything under it, but not `github.com/my-org-archive` |
-| `localhost:3000` | that port only |
+When you paste a URL over a selection:
 
-You can paste entries straight from the address bar: `https://` and a leading `*.` are accepted and ignored.
+- the selection becomes `[selected text](https://…)` right away, and the Card / Link / Plain URL menu opens
+- **Card** builds a card titled with your selected text
+- **Link** keeps the link as it is, without contacting the site
+- **Plain URL** replaces the selection with the URL
+- closing the menu keeps the link
 
-The list only affects the menu shown on paste. You can still right-click an ignored URL, or run **Change link style at cursor**, to turn it into a card or a link.
+Spaces at the edges of the selection stay outside the link.
 
-The list is empty by default, so nothing changes until you add an entry.
+This is controlled by the new **Preserve selection as title** setting, which is on by default. Turn it off to leave pastes over a selection to Obsidian, as in earlier versions.
 
-## Install with BRAT
-
-The README now explains how to install and update the plugin with [BRAT](https://github.com/TfTHacker/obsidian42-brat), using `https://github.com/coreyx/obsidian-link-or-card`.
+The paste is also left to Obsidian when the selection spans more than one line, already contains a link, or there are several selections. The setting needs **Ask when pasting a URL** to be on, and URLs on your ignore list still paste normally.
 
 ## Upgrading
 
-No action is needed. Existing settings and cards are unchanged.
+Pasting a URL over selected text behaves differently after this update, because the new setting is on by default. Turn off **Preserve selection as title** if you prefer the old behaviour.
