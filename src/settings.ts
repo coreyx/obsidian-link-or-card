@@ -6,11 +6,13 @@ export interface LinkOrCardSettings {
   askOnPaste: boolean;
   /** One entry per line, as typed; see isIgnoredUrl() for how an entry matches. */
   ignoredUrls: string;
+  preserveSelectionAsTitle: boolean;
 }
 
 export const DEFAULT_SETTINGS: LinkOrCardSettings = {
   askOnPaste: true,
   ignoredUrls: "",
+  preserveSelectionAsTitle: true,
 };
 
 const IGNORED_URLS_PLACEHOLDER = "example.com\ngithub.com/my-org";
@@ -48,6 +50,15 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
           rows: IGNORED_URLS_ROWS,
         },
       },
+      {
+        name: t.settingPreserveSelectionName,
+        desc: t.settingPreserveSelectionDesc,
+        control: {
+          type: "toggle",
+          key: "preserveSelectionAsTitle",
+          defaultValue: DEFAULT_SETTINGS.preserveSelectionAsTitle,
+        },
+      },
     ];
   }
 
@@ -80,5 +91,15 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
       });
+
+    new Setting(containerEl)
+      .setName(t.settingPreserveSelectionName)
+      .setDesc(t.settingPreserveSelectionDesc)
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.preserveSelectionAsTitle).onChange(async (value) => {
+          this.plugin.settings.preserveSelectionAsTitle = value;
+          await this.plugin.saveSettings();
+        }),
+      );
   }
 }

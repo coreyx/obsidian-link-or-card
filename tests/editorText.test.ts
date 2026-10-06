@@ -7,6 +7,7 @@ import {
   isInsideCodeFence,
   isInsideFrontmatter,
   locateNearest,
+  titleInSelection,
 } from "../src/editorText";
 
 const doc = (text: string) => {
@@ -66,6 +67,30 @@ describe("canTransformPaste", () => {
     expect(canTransformPaste(doc("[title]("), 0, 8)).toBe(false);
     expect(canTransformPaste(doc("<"), 0, 1)).toBe(false);
     expect(canTransformPaste(doc('<img src="'), 0, 10)).toBe(false);
+  });
+});
+
+describe("titleInSelection", () => {
+  it("returns the selected text as the title", () => {
+    expect(titleInSelection("the docs")).toEqual({ title: "the docs", offset: 0 });
+  });
+
+  it("leaves surrounding whitespace outside the title", () => {
+    expect(titleInSelection("  the docs ")).toEqual({ title: "the docs", offset: 2 });
+    expect(titleInSelection("\nthe docs\n")).toEqual({ title: "the docs", offset: 1 });
+  });
+
+  it("refuses a blank or multi-line selection", () => {
+    expect(titleInSelection("")).toBeNull();
+    expect(titleInSelection(" \n ")).toBeNull();
+    expect(titleInSelection("first line\nsecond line")).toBeNull();
+  });
+
+  it("refuses a selection that already holds a link", () => {
+    expect(titleInSelection("https://example.com")).toBeNull();
+    expect(titleInSelection("see HTTP://example.com now")).toBeNull();
+    expect(titleInSelection("[docs](notes/docs.md)")).toBeNull();
+    expect(titleInSelection("see [[Docs]]")).toBeNull();
   });
 });
 

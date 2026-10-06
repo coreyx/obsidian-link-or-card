@@ -46,6 +46,18 @@ export function canTransformPaste(doc: LineSource, line: number, ch: number): bo
   return true;
 }
 
+/**
+ * The part of a selection that can become a link's text, with its offset in the
+ * selection so the whitespace around it stays outside the link. Null when the
+ * selection is blank, spans lines, or already holds a link that would end up nested.
+ */
+export function titleInSelection(selection: string): { title: string; offset: number } | null {
+  const title = selection.trim();
+  if (title === "" || /[\r\n]/.test(title)) return null;
+  if (/https?:\/\/|\[\[|\]\(/i.test(title)) return null;
+  return { title, offset: selection.indexOf(title) };
+}
+
 export type LinkAt =
   | { kind: "bare"; from: number; to: number; url: string }
   | { kind: "markdown"; from: number; to: number; url: string; text: string };

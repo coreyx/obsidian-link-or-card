@@ -18,7 +18,7 @@ Copy a URL, paste it into a note, and choose **Card**, **Link** or **Plain URL**
 
 The menu does not appear when the paste is clearly something else:
 
-- text is selected (the paste is left to Obsidian)
+- text is selected and [**Preserve selection as title**](#settings) is off (the paste is left to Obsidian)
 - the cursor is in a code block, inline code or the frontmatter
 - the URL is being typed into Markdown or HTML syntax, such as right after `](`, `<` or `href="`
 - the clipboard holds more than a single URL
@@ -63,6 +63,12 @@ site: Obsidian
   | `localhost:3000` | that port only |
 
   `https://` and a leading `*.` are accepted and ignored, so `https://*.example.com/` means the same as `example.com`.
+- **Preserve selection as title** — on by default. Pasting a URL over selected text keeps that text as the title instead of the page's own title:
+  - the selection becomes `[selected text](https://…)` right away, and the menu opens as usual
+  - **Card** builds a card titled with the selected text; **Link** keeps the link as it is, with no request; **Plain URL** replaces the selection with the URL
+  - closing the menu keeps the link
+
+  The paste is still left to Obsidian when the selection spans more than one line, already contains a link, or there are several selections. This setting needs **Ask when pasting a URL** to be on. Turn it off to leave every paste over a selection to Obsidian.
 
 ## Network use
 

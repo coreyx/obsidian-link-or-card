@@ -11,6 +11,7 @@ import {
   isInsideCodeFence,
   isInsideFrontmatter,
   locateNearest,
+  titleInSelection,
 } from "./src/editorText";
 import { fetchMetadata } from "./src/fetchMetadata";
 import type { Requester } from "./src/fetchMetadata";
@@ -25,7 +26,15 @@ type Style = "card" | "link" | "plain";
 
 type Target =
   | { kind: "bare"; from: EditorPosition; to: EditorPosition; url: string }
-  | { kind: "markdown"; from: EditorPosition; to: EditorPosition; url: string; text: string }
+  | {
+      kind: "markdown";
+      from: EditorPosition;
+      to: EditorPosition;
+      url: string;
+      text: string;
+      /** Set when the text is a selection the user pasted over, which then wins over the fetched title. */
+      keepText?: boolean;
+    }
   | { kind: "card"; from: EditorPosition; to: EditorPosition; data: CardData };
 
 interface EditorContext {
@@ -114,17 +123,32 @@ export default class LinkOrCardPlugin extends Plugin {
     if (clipboard === null || clipboard.files.length > 0) return;
     const url = parsePastedUrl(clipboard.getData("text/plain"));
     const { editor } = context;
-    if (url === null || editor.somethingSelected()) return;
-    if (isIgnoredUrl(url, this.settings.ignoredUrls)) return;
-    const from = editor.getCursor();
+    if (url === null || isIgnoredUrl(url, this.settings.ignoredUrls)) return;
+    const selected = editor.somethingSelected() ? this.selectedTitle(editor) : undefined;
+    if (selected === null) return;
+    const from = selected?.from ?? editor.getCursor();
     if (!canTransformPaste(editor, from.line, from.ch)) return;
 
-    // Paste the URL right away, so closing the menu leaves an ordinary paste behind.
+    // Paste right away, so closing the menu leaves an ordinary paste behind: the URL, or a link titled with the selection.
     evt.preventDefault();
-    editor.replaceRange(url, from);
-    const to = { line: from.line, ch: from.ch + url.length };
+    const pasted = selected === undefined ? url : formatMarkdownLink(selected.title, url);
+    editor.replaceRange(pasted, from, selected?.to);
+    const to = { line: from.line, ch: from.ch + pasted.length };
     editor.setCursor(to);
-    this.showMenuAtCursor(context, { kind: "bare", from, to, url }, ["card", "link", "plain"], this.pasteLabels());
+    const target: Target =
+      selected === undefined
+        ? { kind: "bare", from, to, url }
+        : { kind: "markdown", from, to, url, text: selected.title, keepText: true };
+    this.showMenuAtCursor(context, target, ["card", "link", "plain"], this.pasteLabels());
+  }
+
+  /** The selection to keep as the title of a pasted URL, or null when the paste should be left to Obsidian. */
+  private selectedTitle(editor: Editor): { title: string; from: EditorPosition; to: EditorPosition } | null {
+    if (!this.settings.preserveSelectionAsTitle || editor.listSelections().length !== 1) return null;
+    const found = titleInSelection(editor.getSelection());
+    if (found === null) return null;
+    const start = editor.posToOffset(editor.getCursor("from")) + found.offset;
+    return { title: found.title, from: editor.offsetToPos(start), to: editor.offsetToPos(start + found.title.length) };
   }
 
   private addEditorMenuItems(menu: Menu, context: EditorContext): void {
@@ -214,6 +238,8 @@ export default class LinkOrCardPlugin extends Plugin {
       if (target.kind === "markdown") editor.replaceRange(target.url, target.from, target.to);
       return;
     }
+    // A selection pasted over is already a link with its own title, so there is nothing to fetch.
+    if (style === "link" && target.kind === "markdown") return;
 
     // Card and link both need the page. The note may change while it loads.
     const original = editor.getRange(target.from, target.to);
@@ -237,7 +263,9 @@ export default class LinkOrCardPlugin extends Plugin {
 
     if (meta === null) new Notice(this.strings.cardWithoutMeta);
     const data: CardData = { ...(meta ?? { url: target.url }) };
-    if (data.title === undefined && target.kind === "markdown" && target.text.trim() !== "") data.title = target.text;
+    if (target.kind === "markdown" && target.text.trim() !== "" && (target.keepText === true || data.title === undefined)) {
+      data.title = target.text;
+    }
     const line = editor.getLine(range.from.line);
     editor.replaceRange(blockReplacement(line, range.from.ch, range.to.ch, formatCardBlock(data)), range.from, range.to);
   }
