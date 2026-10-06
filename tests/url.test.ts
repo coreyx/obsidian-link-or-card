@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parsePastedUrl, safeHttpUrl } from "../src/url";
+import { isIgnoredUrl, parsePastedUrl, safeHttpUrl } from "../src/url";
 
 describe("parsePastedUrl", () => {
   it("accepts a single http or https URL", () => {
@@ -24,6 +24,48 @@ describe("parsePastedUrl", () => {
     expect(parsePastedUrl("obsidian://open?vault=x")).toBeNull();
     expect(parsePastedUrl("https://")).toBeNull();
     expect(parsePastedUrl("example.com")).toBeNull();
+  });
+});
+
+describe("isIgnoredUrl", () => {
+  it("ignores nothing when the list is empty or blank", () => {
+    expect(isIgnoredUrl("https://example.com/a", "")).toBe(false);
+    expect(isIgnoredUrl("https://example.com/a", " \n\n  ")).toBe(false);
+  });
+
+  it("matches a domain and its subdomains, whatever the scheme", () => {
+    expect(isIgnoredUrl("https://example.com/a?b=1", "example.com")).toBe(true);
+    expect(isIgnoredUrl("http://docs.example.com/", "example.com")).toBe(true);
+    expect(isIgnoredUrl("https://EXAMPLE.com", "Example.COM")).toBe(true);
+    expect(isIgnoredUrl("https://notexample.com", "example.com")).toBe(false);
+    expect(isIgnoredUrl("https://example.com.evil.test", "example.com")).toBe(false);
+    expect(isIgnoredUrl("https://example.com", "docs.example.com")).toBe(false);
+  });
+
+  it("accepts entries written with a scheme, a wildcard or a trailing slash", () => {
+    expect(isIgnoredUrl("http://example.com/a", "https://example.com/")).toBe(true);
+    expect(isIgnoredUrl("https://docs.example.com", "*.example.com")).toBe(true);
+    expect(isIgnoredUrl("https://docs.example.com", "https://*.example.com")).toBe(true);
+  });
+
+  it("narrows an entry to a path by whole segments", () => {
+    expect(isIgnoredUrl("https://github.com/my-org", "github.com/my-org")).toBe(true);
+    expect(isIgnoredUrl("https://github.com/my-org/repo?tab=readme#top", "github.com/my-org/")).toBe(true);
+    expect(isIgnoredUrl("https://github.com/my-organization", "github.com/my-org")).toBe(false);
+    expect(isIgnoredUrl("https://github.com/other", "github.com/my-org")).toBe(false);
+  });
+
+  it("narrows an entry to a port when one is given", () => {
+    expect(isIgnoredUrl("http://localhost:3000/a", "localhost:3000")).toBe(true);
+    expect(isIgnoredUrl("http://localhost:8080/a", "localhost:3000")).toBe(false);
+    expect(isIgnoredUrl("http://localhost:8080/a", "localhost")).toBe(true);
+  });
+
+  it("checks every line and skips the ones it cannot read", () => {
+    const list = "example.com\r\n  \nhttps://\n???\n  github.com/my-org  ";
+    expect(isIgnoredUrl("https://github.com/my-org/repo", list)).toBe(true);
+    expect(isIgnoredUrl("https://example.com", list)).toBe(true);
+    expect(isIgnoredUrl("https://obsidian.md", list)).toBe(false);
   });
 });
 

@@ -4,11 +4,17 @@ import type LinkOrCardPlugin from "../main";
 
 export interface LinkOrCardSettings {
   askOnPaste: boolean;
+  /** One entry per line, as typed; see isIgnoredUrl() for how an entry matches. */
+  ignoredUrls: string;
 }
 
 export const DEFAULT_SETTINGS: LinkOrCardSettings = {
   askOnPaste: true,
+  ignoredUrls: "",
 };
+
+const IGNORED_URLS_PLACEHOLDER = "example.com\ngithub.com/my-org";
+const IGNORED_URLS_ROWS = 4;
 
 export class LinkOrCardSettingTab extends PluginSettingTab {
   constructor(
@@ -31,6 +37,17 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
         desc: t.settingAskOnPasteDesc,
         control: { type: "toggle", key: "askOnPaste", defaultValue: DEFAULT_SETTINGS.askOnPaste },
       },
+      {
+        name: t.settingIgnoredUrlsName,
+        desc: t.settingIgnoredUrlsDesc,
+        control: {
+          type: "textarea",
+          key: "ignoredUrls",
+          defaultValue: DEFAULT_SETTINGS.ignoredUrls,
+          placeholder: IGNORED_URLS_PLACEHOLDER,
+          rows: IGNORED_URLS_ROWS,
+        },
+      },
     ];
   }
 
@@ -49,5 +66,19 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }),
       );
+
+    new Setting(containerEl)
+      .setName(t.settingIgnoredUrlsName)
+      .setDesc(t.settingIgnoredUrlsDesc)
+      .addTextArea((area) => {
+        area.inputEl.rows = IGNORED_URLS_ROWS;
+        area
+          .setPlaceholder(IGNORED_URLS_PLACEHOLDER)
+          .setValue(this.plugin.settings.ignoredUrls)
+          .onChange(async (value) => {
+            this.plugin.settings.ignoredUrls = value;
+            await this.plugin.saveSettings();
+          });
+      });
   }
 }

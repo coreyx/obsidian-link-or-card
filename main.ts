@@ -19,7 +19,7 @@ import type { Strings } from "./src/i18n";
 import { formatMarkdownLink } from "./src/markdownLink";
 import { DEFAULT_SETTINGS, LinkOrCardSettingTab } from "./src/settings";
 import type { LinkOrCardSettings } from "./src/settings";
-import { parsePastedUrl, safeHttpUrl } from "./src/url";
+import { isIgnoredUrl, parsePastedUrl, safeHttpUrl } from "./src/url";
 
 type Style = "card" | "link" | "plain";
 
@@ -115,6 +115,7 @@ export default class LinkOrCardPlugin extends Plugin {
     const url = parsePastedUrl(clipboard.getData("text/plain"));
     const { editor } = context;
     if (url === null || editor.somethingSelected()) return;
+    if (isIgnoredUrl(url, this.settings.ignoredUrls)) return;
     const from = editor.getCursor();
     if (!canTransformPaste(editor, from.line, from.ch)) return;
 

@@ -14,6 +14,8 @@ export interface Strings {
   invalidCard: string;
   settingAskOnPasteName: string;
   settingAskOnPasteDesc: string;
+  settingIgnoredUrlsName: string;
+  settingIgnoredUrlsDesc: string;
 }
 
 const en: Strings = {
@@ -33,6 +35,9 @@ const en: Strings = {
   settingAskOnPasteName: "Ask when pasting a URL",
   settingAskOnPasteDesc:
     "Show a menu to choose card, link or plain URL. When off, pasting works as usual and you can still convert with the command or the right-click menu.",
+  settingIgnoredUrlsName: "Don't ask for these URLs",
+  settingIgnoredUrlsDesc:
+    "One per line. A domain such as example.com also covers its subdomains; add a path, as in github.com/my-org, to cover only part of a site. Matching URLs are pasted as usual, without the menu.",
 };
 
 const ja: Strings = {
@@ -52,6 +57,9 @@ const ja: Strings = {
   settingAskOnPasteName: "URLを貼り付けたときに形式を選ぶ",
   settingAskOnPasteDesc:
     "カード・リンク・URLのままから選ぶメニューを出します。オフにすると通常の貼り付けになり、コマンドか右クリックメニューで後から変換できます。",
+  settingIgnoredUrlsName: "メニューを出さないURL",
+  settingIgnoredUrlsDesc:
+    "1行に1つ入力します。example.com のようなドメインはサブドメインも対象になり、github.com/my-org のようにパスを付けるとサイトの一部だけが対象になります。一致するURLはメニューを出さずに通常どおり貼り付けます。",
 };
 
 export function getStrings(locale: string): Strings {
