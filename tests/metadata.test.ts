@@ -68,6 +68,66 @@ describe("extractMetadata", () => {
   });
 });
 
+describe("extractMetadata author", () => {
+  const author = (head: string, body = "") =>
+    extractMetadata(`<!doctype html><html><head>${head}</head><body>${body}</body></html>`, PAGE).author;
+  const jsonLd = (data: unknown) => `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
+
+  it("is left out when the page names nobody", () => {
+    expect(author("<title>Doc</title>")).toBeUndefined();
+  });
+
+  it("reads the author meta tag", () => {
+    expect(author(`<meta name="author" content="  Jane   Doe ">`)).toBe("Jane Doe");
+    expect(author(`<meta name="dc.creator" content="Jane Doe">`)).toBe("Jane Doe");
+  });
+
+  it("skips a meta tag that holds a profile URL instead of a name", () => {
+    const head = `<meta property="article:author" content="https://www.facebook.com/jane"><meta name="parsely-author" content="Jane Doe">`;
+    expect(author(head)).toBe("Jane Doe");
+    expect(author(`<meta property="article:author" content="https://www.facebook.com/jane">`)).toBeUndefined();
+  });
+
+  it("reads JSON-LD authors given as a person, a string or a list", () => {
+    expect(author(jsonLd({ "@type": "Article", author: { "@type": "Person", name: "Jane Doe" } }))).toBe("Jane Doe");
+    expect(author(jsonLd({ "@type": "Article", author: "Jane Doe" }))).toBe("Jane Doe");
+    expect(author(jsonLd({ "@type": "Article", author: [{ name: "Jane Doe" }, { name: "Sam Roe" }, { name: "Jane Doe" }] }))).toBe(
+      "Jane Doe, Sam Roe",
+    );
+    expect(author(jsonLd({ "@type": "CreativeWork", creator: { name: "Studio" } }))).toBe("Studio");
+  });
+
+  it("looks inside a JSON-LD @graph and a top-level list, but no deeper", () => {
+    const graph = { "@graph": [{ "@type": "WebSite", name: "Example" }, { "@type": "Article", author: { name: "Jane Doe" } }] };
+    expect(author(jsonLd(graph))).toBe("Jane Doe");
+    expect(author(jsonLd([{ "@type": "WebSite" }, { "@type": "Article", author: { name: "Jane Doe" } }]))).toBe("Jane Doe");
+    expect(author(jsonLd({ "@type": "Article", comment: [{ author: { name: "A commenter" } }] }))).toBeUndefined();
+  });
+
+  it("survives JSON-LD that is broken or holds no name", () => {
+    const head = `<script type="application/ld+json">{ not json</script>` + jsonLd({ author: { url: "https://example.com/jane" } }) + jsonLd(null);
+    expect(author(head)).toBeUndefined();
+  });
+
+  it("reads microdata, as YouTube marks up the channel", () => {
+    const channel = `<span itemprop="author" itemscope itemtype="http://schema.org/Person"><link itemprop="url" href="https://www.youtube.com/@jane"><link itemprop="name" content="Jane's Channel"></span>`;
+    expect(author("", channel)).toBe("Jane's Channel");
+    expect(author("", `<span itemprop="author">Jane Doe</span>`)).toBe("Jane Doe");
+    expect(author("", `<div itemprop="author" itemscope><span itemprop="name">Jane Doe</span></div>`)).toBe("Jane Doe");
+  });
+
+  it("prefers the meta tag, then JSON-LD, then microdata, then the Twitter handle", () => {
+    const meta = `<meta name="author" content="Meta">`;
+    const ld = jsonLd({ author: { name: "Linked" } });
+    const micro = `<span itemprop="author">Micro</span>`;
+    const twitter = `<meta name="twitter:creator" content="@handle">`;
+    expect(author(meta + ld + twitter, micro)).toBe("Meta");
+    expect(author(ld + twitter, micro)).toBe("Linked");
+    expect(author(twitter, micro)).toBe("Micro");
+    expect(author(twitter)).toBe("@handle");
+  });
+});
+
 const bytes = (...parts: (string | number[])[]): ArrayBuffer => {
   const chunks = parts.map((part) => (typeof part === "string" ? Array.from(new TextEncoder().encode(part)) : part));
   return new Uint8Array(chunks.flat()).buffer;

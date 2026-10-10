@@ -45,6 +45,14 @@
   line-height: 1.4;
 }
 
+.loc-card-author {
+  overflow: hidden;
+  font-size: var(--font-ui-small);
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .loc-card-description {
   color: var(--text-muted);
   font-size: var(--font-ui-small);

@@ -31,6 +31,7 @@ export function renderCard(container: HTMLElement, data: CardData | null, option
 
   const body = card.createDiv({ cls: "loc-card-body" });
   body.createDiv({ cls: "loc-card-title", text: data.title ?? data.site ?? host });
+  if (data.author !== undefined) body.createDiv({ cls: "loc-card-author", text: data.author });
   if (data.description !== undefined) body.createDiv({ cls: "loc-card-description", text: data.description });
 
   const meta = body.createDiv({ cls: "loc-card-meta" });

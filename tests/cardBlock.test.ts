@@ -14,6 +14,11 @@ describe("formatCardBlock", () => {
     );
   });
 
+  it("writes the author right after the title", () => {
+    const block = formatCardBlock({ url: "https://example.com", description: "Desc", author: "Jane Doe", title: "Title" });
+    expect(block.split("\n").slice(1, -1)).toEqual(["url: https://example.com", "title: Title", "author: Jane Doe", "description: Desc"]);
+  });
+
   it("keeps every value on one line", () => {
     const block = formatCardBlock({ url: "https://example.com", description: "line one\n\n line two\t end" });
     expect(block).toContain("description: line one line two end");
@@ -31,6 +36,7 @@ describe("parseCardBlock", () => {
     const data = {
       url: "https://example.com/a?x=1",
       title: "Title: with colon",
+      author: "Jane Doe",
       description: "Desc",
       image: "https://example.com/og.png",
       favicon: "https://example.com/favicon.ico",

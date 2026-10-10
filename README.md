@@ -4,7 +4,7 @@ Paste a URL and it lands in your note as a titled link. Press **Ctrl/Cmd+Shift+V
 
 | Choice | Result |
 | --- | --- |
-| **Card** | A preview card with the page title, description, thumbnail and site icon |
+| **Card** | A preview card with the page title, author, description, thumbnail and site icon |
 | **Link** | `[Page title](https://…)` — a Markdown link with the title filled in |
 | **Plain URL** | The URL exactly as pasted |
 
@@ -49,6 +49,7 @@ A card is a fenced code block with one `key: value` per line:
 ```linkcard
 url: https://obsidian.md/
 title: Obsidian - Sharpen your thinking
+author: @obsdmd
 description: The free and flexible app for your private thoughts.
 image: https://obsidian.md/images/banner.png
 favicon: https://obsidian.md/favicon.ico
@@ -58,6 +59,7 @@ site: Obsidian
 
 - The page is fetched **once**, when the card is created. Opening the note later does not contact the site, and the card keeps working offline apart from the images.
 - Only `url` is required. Edit any line by hand to change what the card shows.
+- `author` is the page's creator, shown under the title. It is read from the page's author tag, its structured data (which is where a YouTube channel name comes from) or, failing those, its Twitter handle. Pages that name nobody get no `author` line; add or correct one by hand. Cards made before this field existed are unchanged.
 - Without the plugin, the block is still readable text with the URL in it.
 - Cards work inside list items and blockquotes.
 
@@ -90,7 +92,7 @@ site: Obsidian
 
 ## Network use
 
-To build a card or a titled link, the plugin sends one `GET` request to the URL, using Obsidian's `requestUrl`, and reads the page's `<title>`, Open Graph and Twitter card tags. Nothing is sent anywhere else.
+To build a card or a titled link, the plugin sends one `GET` request to the URL, using Obsidian's `requestUrl`, and reads the page's `<title>`, Open Graph and Twitter card tags, and its author markup. Nothing is sent anywhere else.
 
 With **When pasting a URL** set to **Link** (the default) or **Card**, that request is made as soon as you paste a URL, without asking. No request is made when:
 

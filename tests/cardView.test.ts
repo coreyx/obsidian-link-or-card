@@ -43,10 +43,20 @@ describe("renderCard", () => {
     expect(container.querySelector(".loc-card-thumb")).toBeNull();
   });
 
+  it("shows the author under the title, and nothing there when the card has none", () => {
+    const { container } = render({ ...FULL, author: "Jane Doe" });
+    const author = container.querySelector(".loc-card-author");
+    expect(author?.textContent).toBe("Jane Doe");
+    expect(author?.previousElementSibling?.className).toBe("loc-card-title");
+    expect(author?.nextElementSibling?.className).toBe("loc-card-description");
+    expect(render(FULL).container.querySelector(".loc-card-author")).toBeNull();
+  });
+
   it("treats page text as text, never as markup", () => {
-    const { container } = render({ url: "https://example.com", title: "<img src=x onerror=alert(1)>" });
+    const { container } = render({ url: "https://example.com", title: "<img src=x onerror=alert(1)>", author: "<b>x</b>" });
     expect(container.querySelector(".loc-card-title")?.textContent).toBe("<img src=x onerror=alert(1)>");
-    expect(container.querySelectorAll("img")).toHaveLength(0);
+    expect(container.querySelector(".loc-card-author")?.textContent).toBe("<b>x</b>");
+    expect(container.querySelectorAll("img, b")).toHaveLength(0);
   });
 
   it("opens the link through onOpen instead of navigating the app window", () => {

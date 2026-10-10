@@ -51,6 +51,59 @@ function findIcon(doc: Document, base: string): string | undefined {
   return resolveUrl(icon?.getAttribute("href"), base);
 }
 
+const isUrl = (value: string): boolean => /^https?:\/\//i.test(value);
+
+/** Meta tags that name the author, most trusted first. `article:author` is often a profile URL, which is skipped. */
+const AUTHOR_METAS = ["author", "article:author", "parsely-author", "sailthru.author", "dc.creator", "dcterms.creator", "citation_author"];
+
+/** Names in a schema.org `author` or `creator` value: a string, a Person or Organization, or a list of either. */
+function jsonLdNames(value: unknown): string[] {
+  if (typeof value === "string") {
+    const name = clean(value);
+    return name === undefined || isUrl(name) ? [] : [name];
+  }
+  if (Array.isArray(value)) return value.flatMap(jsonLdNames);
+  if (typeof value === "object" && value !== null) return jsonLdNames((value as { name?: unknown }).name);
+  return [];
+}
+
+/** Reads top-level JSON-LD nodes only; an author nested deeper belongs to a comment or a related item, not the page. */
+function jsonLdAuthor(doc: Document): string | undefined {
+  for (const script of Array.from(doc.querySelectorAll('script[type^="application/ld+json"]'))) {
+    let json: unknown;
+    try {
+      json = JSON.parse(script.textContent ?? "");
+    } catch {
+      continue;
+    }
+    const nodes = (Array.isArray(json) ? json : [json]).flatMap((root: unknown): unknown[] => {
+      const graph = (root as { "@graph"?: unknown } | null)?.["@graph"];
+      return Array.isArray(graph) ? graph : [root];
+    });
+    for (const node of nodes) {
+      if (typeof node !== "object" || node === null) continue;
+      const { author, creator } = node as { author?: unknown; creator?: unknown };
+      const names = jsonLdNames(author ?? creator);
+      if (names.length > 0) return Array.from(new Set(names)).join(", ");
+    }
+  }
+  return undefined;
+}
+
+/** Microdata, which is where YouTube puts the channel name. */
+function microdataAuthor(doc: Document): string | undefined {
+  const author = doc.querySelector('[itemprop="author"]');
+  if (author === null) return undefined;
+  const name = author.querySelector('[itemprop="name"]') ?? (author.children.length === 0 ? author : null);
+  const value = clean(author.getAttribute("content") ?? name?.getAttribute("content") ?? name?.textContent);
+  return value === undefined || isUrl(value) ? undefined : value;
+}
+
+function findAuthor(doc: Document, metas: Map<string, string>): string | undefined {
+  const named = AUTHOR_METAS.map((key) => metas.get(key)).find((value) => value !== undefined && !isUrl(value));
+  return named ?? jsonLdAuthor(doc) ?? microdataAuthor(doc) ?? metas.get("twitter:creator");
+}
+
 /** DOMParser documents are inert: no scripts run and no subresources load. */
 export function extractMetadata(html: string, pageUrl: string): CardData {
   const doc = new DOMParser().parseFromString(html, "text/html");
@@ -67,12 +120,14 @@ export function extractMetadata(html: string, pageUrl: string): CardData {
 
   const data: CardData = { url: pageUrl };
   const title = clean(pick("og:title", "twitter:title") ?? doc.title);
+  const author = findAuthor(doc, metas);
   const description = pick("og:description", "twitter:description", "description");
   const image = resolveUrl(pick("og:image", "og:image:url", "og:image:secure_url", "twitter:image", "twitter:image:src"), base);
   const favicon = findIcon(doc, base) ?? resolveUrl("/favicon.ico", pageUrl);
   const site = pick("og:site_name");
 
   if (title !== undefined) data.title = title;
+  if (author !== undefined) data.author = author;
   if (description !== undefined) data.description = description;
   if (image !== undefined) data.image = image;
   if (favicon !== undefined) data.favicon = favicon;
