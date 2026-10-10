@@ -4,6 +4,12 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-10
+
+### Added
+
+- Cards have an `author` field, shown under the title. It is filled in when the card is created, from the page's author tag, its structured data (JSON-LD or microdata, which covers YouTube channel names) or, failing those, its Twitter handle. Existing cards are unchanged; add an `author:` line by hand, or convert the card to a link and back to a card to fetch it.
+
 ## [0.4.0] - 2026-10-05
 
 ### Added
@@ -65,7 +71,8 @@ First release.
 - **Ask when pasting a URL** setting.
 - English and Japanese interface text.
 
-[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.4.0...HEAD
+[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/coreyx/obsidian-link-or-card/releases/tag/0.2.0
