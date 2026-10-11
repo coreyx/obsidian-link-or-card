@@ -5,6 +5,8 @@ export interface CardData {
   url: string;
   title?: string;
   author?: string;
+  /** Kept in the block for the note's own use; the rendered card does not show it. */
+  handle?: string;
   description?: string;
   image?: string;
   favicon?: string;
@@ -13,7 +15,7 @@ export interface CardData {
 
 type CardField = keyof CardData;
 
-const FIELDS: readonly CardField[] = ["url", "title", "author", "description", "image", "favicon", "site"];
+const FIELDS: readonly CardField[] = ["url", "title", "author", "handle", "description", "image", "favicon", "site"];
 
 const isField = (key: string): key is CardField => (FIELDS as readonly string[]).includes(key);
 

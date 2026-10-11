@@ -60,6 +60,7 @@ site: Obsidian
 - The page is fetched **once**, when the card is created. Opening the note later does not contact the site, and the card keeps working offline apart from the images.
 - Only `url` is required. Edit any line by hand to change what the card shows.
 - `author` is the page's creator, shown under the title. It is read from the page's author tag, its structured data (which is where a YouTube channel name comes from) or, failing those, its Twitter handle. Pages that name nobody get no `author` line; add or correct one by hand. Cards made before this field existed are unchanged.
+- `handle` is the YouTube handle of a video's channel, such as `handle: @jawed`. It is stored in the block but **not shown in the card**, so it is there for search, queries and your own reference. Only YouTube videos, Shorts and channel pages pasted by their `@handle` get one.
 - Without the plugin, the block is still readable text with the URL in it.
 - Cards work inside list items and blockquotes.
 

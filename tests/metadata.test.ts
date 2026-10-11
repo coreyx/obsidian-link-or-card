@@ -128,6 +128,38 @@ describe("extractMetadata author", () => {
   });
 });
 
+describe("extractMetadata handle", () => {
+  const VIDEO = "https://www.youtube.com/watch?v=jNQXAC9IVRw";
+  const channel = (profileUrl: string) =>
+    `<!doctype html><html><head></head><body><span itemprop="author" itemscope itemtype="http://schema.org/Person"><link itemprop="url" href="${profileUrl}"><link itemprop="name" content="jawed"></span></body></html>`;
+
+  it("reads the YouTube handle from a video's channel link", () => {
+    expect(extractMetadata(channel("http://www.youtube.com/@jawed"), VIDEO)).toMatchObject({ author: "jawed", handle: "@jawed" });
+    expect(extractMetadata(channel("https://www.youtube.com/@jawed/videos"), "https://youtu.be/jNQXAC9IVRw").handle).toBe("@jawed");
+  });
+
+  it("decodes a handle written in another script", () => {
+    expect(extractMetadata(channel("http://www.youtube.com/@%E3%81%82%E3%81%84"), VIDEO).handle).toBe("@あい");
+  });
+
+  it("falls back to the handle in the pasted URL, as on a channel page", () => {
+    const html = channel("https://www.youtube.com/channel/UC4QobU6STFB0P71PMvOGN5A");
+    expect(extractMetadata(html, "https://www.youtube.com/@jawed").handle).toBe("@jawed");
+    expect(extractMetadata(html, "https://m.youtube.com/@jawed/videos?view=0").handle).toBe("@jawed");
+  });
+
+  it("is left out when YouTube gives no handle", () => {
+    expect(extractMetadata(channel("https://www.youtube.com/channel/UC4QobU6STFB0P71PMvOGN5A"), VIDEO).handle).toBeUndefined();
+    expect(extractMetadata(page(""), VIDEO).handle).toBeUndefined();
+  });
+
+  it("is left out for pages that are not YouTube", () => {
+    expect(extractMetadata(channel("https://example.com/@jane"), PAGE).handle).toBeUndefined();
+    expect(extractMetadata(channel("https://notyoutube.com/@jane"), "https://notyoutube.com/@jane").handle).toBeUndefined();
+    expect(extractMetadata(page(`<meta name="twitter:creator" content="@handle">`), PAGE).handle).toBeUndefined();
+  });
+});
+
 const bytes = (...parts: (string | number[])[]): ArrayBuffer => {
   const chunks = parts.map((part) => (typeof part === "string" ? Array.from(new TextEncoder().encode(part)) : part));
   return new Uint8Array(chunks.flat()).buffer;

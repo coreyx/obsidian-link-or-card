@@ -52,6 +52,12 @@ describe("renderCard", () => {
     expect(render(FULL).container.querySelector(".loc-card-author")).toBeNull();
   });
 
+  it("keeps the handle out of the rendered card", () => {
+    const { container } = render({ ...FULL, author: "Jane Doe", handle: "@janedoe" });
+    expect(container.textContent).not.toContain("@janedoe");
+    expect(container.innerHTML).toBe(render({ ...FULL, author: "Jane Doe" }).container.innerHTML);
+  });
+
   it("treats page text as text, never as markup", () => {
     const { container } = render({ url: "https://example.com", title: "<img src=x onerror=alert(1)>", author: "<b>x</b>" });
     expect(container.querySelector(".loc-card-title")?.textContent).toBe("<img src=x onerror=alert(1)>");

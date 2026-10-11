@@ -104,6 +104,26 @@ function findAuthor(doc: Document, metas: Map<string, string>): string | undefin
   return named ?? jsonLdAuthor(doc) ?? microdataAuthor(doc) ?? metas.get("twitter:creator");
 }
 
+/** The `@handle` in a YouTube channel URL such as https://www.youtube.com/@handle/videos; undefined for any other URL. */
+function youtubeHandle(value: string | null | undefined, base: string): string | undefined {
+  const raw = clean(value);
+  if (raw === undefined) return undefined;
+  try {
+    const url = new URL(raw, base);
+    if (!/(^|\.)youtube\.com$/.test(url.hostname)) return undefined;
+    const handle = /^\/(@[^/]+)/.exec(url.pathname)?.[1];
+    return handle === undefined ? undefined : decodeURIComponent(handle);
+  } catch {
+    return undefined;
+  }
+}
+
+/** A video names its channel in the author microdata; a channel page pasted by its handle names it in its own URL. */
+function findHandle(doc: Document, pageUrl: string): string | undefined {
+  const profile = doc.querySelector('[itemprop="author"] [itemprop="url"]');
+  return youtubeHandle(profile?.getAttribute("href") ?? profile?.getAttribute("content"), pageUrl) ?? youtubeHandle(pageUrl, pageUrl);
+}
+
 /** DOMParser documents are inert: no scripts run and no subresources load. */
 export function extractMetadata(html: string, pageUrl: string): CardData {
   const doc = new DOMParser().parseFromString(html, "text/html");
@@ -121,6 +141,7 @@ export function extractMetadata(html: string, pageUrl: string): CardData {
   const data: CardData = { url: pageUrl };
   const title = clean(pick("og:title", "twitter:title") ?? doc.title);
   const author = findAuthor(doc, metas);
+  const handle = findHandle(doc, pageUrl);
   const description = pick("og:description", "twitter:description", "description");
   const image = resolveUrl(pick("og:image", "og:image:url", "og:image:secure_url", "twitter:image", "twitter:image:src"), base);
   const favicon = findIcon(doc, base) ?? resolveUrl("/favicon.ico", pageUrl);
@@ -128,6 +149,7 @@ export function extractMetadata(html: string, pageUrl: string): CardData {
 
   if (title !== undefined) data.title = title;
   if (author !== undefined) data.author = author;
+  if (handle !== undefined) data.handle = handle;
   if (description !== undefined) data.description = description;
   if (image !== undefined) data.image = image;
   if (favicon !== undefined) data.favicon = favicon;
