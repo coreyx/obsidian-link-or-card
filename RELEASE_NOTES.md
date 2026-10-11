@@ -1,27 +1,30 @@
-# Link or Card 0.5.0
+# Link or Card 0.6.0
 
-## Cards show the author
+## YouTube cards record the channel's handle
 
-A card now shows who made the page, on its own line under the title.
-
-The name is read when the card is created and stored in the card as an `author` line:
+A card made from a YouTube link now stores the channel's handle in a `handle` line, next to the channel name in `author`:
 
 ````markdown
 ```linkcard
-url: https://stephango.com/file-over-app
-title: File over app
-author: Steph Ango
+url: https://www.youtube.com/watch?v=jNQXAC9IVRw
+title: Me at the zoo
+author: jawed
+handle: @jawed
 ```
 ````
 
-Where the name comes from, in order:
+The handle is **not shown in the card**. It lives in the card's source only, so the card looks the same as before and the handle is there for search and your own reference.
 
-1. the page's author tag
-2. its structured data, which is where a YouTube channel name comes from
-3. failing those, the Twitter handle the page names as its creator, such as `@obsdmd`
+Which links get one:
 
-Pages that name nobody, GitHub repositories for one, get no `author` line. You can add or correct the line by hand, like any other line in a card.
+| Pasted link | `handle` |
+| --- | --- |
+| A video, including `youtu.be` links | the channel's handle |
+| A Short | the channel's handle |
+| A channel page pasted as `youtube.com/@handle` | that handle |
+| A channel page pasted by its ID, or a playlist | none |
+| Any page that is not YouTube | none |
 
 ## Upgrading
 
-Cards you already have are unchanged, because a card is only fetched once, when it is created. To give one an author, add an `author:` line by hand, or convert the card to a link and back to a card to fetch the page again.
+No action is needed. Cards you already have are unchanged, because a card is only fetched once, when it is created. To give one a handle, add a `handle:` line by hand, or convert the card to a link and back to a card to fetch the page again.

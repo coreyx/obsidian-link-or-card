@@ -4,6 +4,12 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-10
+
+### Added
+
+- Cards for YouTube videos, Shorts and channel pages pasted by their `@handle` have a `handle` field holding the channel's handle, such as `@jawed`. It is stored in the card block only and is not shown in the rendered card. Existing cards are unchanged.
+
 ## [0.5.0] - 2026-10-10
 
 ### Added
@@ -71,7 +77,8 @@ First release.
 - **Ask when pasting a URL** setting.
 - English and Japanese interface text.
 
-[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.5.0...HEAD
+[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.2.0...0.3.0
