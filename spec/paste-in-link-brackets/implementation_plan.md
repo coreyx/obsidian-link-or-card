@@ -41,7 +41,7 @@ None at this time.
 ### Shortcut
 
 #### [MODIFY] `main.ts`
-- [ ] **TASK-2:** Let the shortcut skip the position check.
+- [x] **TASK-2:** Let the shortcut skip the position check.
   - Give `insertPastedUrl(editor, url)` a third parameter, `checkPosition: boolean`, and call `canTransformPaste` only when it is `true`. Update its TSDoc to say when the check is skipped and why.
   - `handlePaste` passes `true`; `pasteAndChoose` passes `false`.
   - Update the TSDoc on `pasteAndChoose` to say it ignores the cursor's surroundings as well as the paste setting and the ignore list.

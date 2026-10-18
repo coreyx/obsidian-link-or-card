@@ -131,7 +131,7 @@ export default class LinkOrCardPlugin extends Plugin {
     if (clipboard === null || clipboard.files.length > 0) return;
     const url = parsePastedUrl(clipboard.getData("text/plain"));
     if (url === null || isIgnoredUrl(url, this.settings.ignoredUrls)) return;
-    const target = this.insertPastedUrl(context.editor, url);
+    const target = this.insertPastedUrl(context.editor, url, true);
     if (target === null) return;
 
     evt.preventDefault();
@@ -139,7 +139,11 @@ export default class LinkOrCardPlugin extends Plugin {
     else void this.applyStyle(context, target, style);
   }
 
-  /** The command behind the shortcut: asks every time, whatever the paste setting or the ignore list says. */
+  /**
+   * The command behind the shortcut: asks every time, whatever the paste setting, the ignore
+   * list or the cursor's surroundings say. Invoking it is a deliberate request, and the menu
+   * always offers Plain URL, so it does not second-guess the position the way a normal paste does.
+   */
   private async pasteAndChoose(context: EditorContext): Promise<void> {
     let text: string;
     try {
@@ -150,7 +154,7 @@ export default class LinkOrCardPlugin extends Plugin {
     }
     if (text === "") return;
     const url = parsePastedUrl(text);
-    const target = url === null ? null : this.insertPastedUrl(context.editor, url);
+    const target = url === null ? null : this.insertPastedUrl(context.editor, url, false);
     // Anything other than a URL we may restyle is pasted as the plain text it is.
     if (target === null) context.editor.replaceSelection(text);
     else this.showPasteMenu(context, target);
@@ -160,12 +164,16 @@ export default class LinkOrCardPlugin extends Plugin {
    * Pastes the URL at the cursor, or over the selection as a link titled with it. This happens
    * before any menu or fetch, so an ordinary paste is left behind whatever comes next.
    * Null, with nothing pasted, when the paste is not ours to restyle.
+   *
+   * @param checkPosition Whether to refuse positions inside other syntax (code, frontmatter,
+   *   link text or URLs). A normal paste checks; the paste-and-choose command does not, since
+   *   the user asked for the menu there on purpose.
    */
-  private insertPastedUrl(editor: Editor, url: string): Target | null {
+  private insertPastedUrl(editor: Editor, url: string, checkPosition: boolean): Target | null {
     const selected = editor.somethingSelected() ? this.selectedTitle(editor) : undefined;
     if (selected === null) return null;
     const from = selected?.from ?? editor.getCursor();
-    if (!canTransformPaste(editor, from.line, from.ch)) return null;
+    if (checkPosition && !canTransformPaste(editor, from.line, from.ch)) return null;
 
     const pasted = selected === undefined ? url : formatMarkdownLink(selected.title, url);
     editor.replaceRange(pasted, from, selected?.to);
