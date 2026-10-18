@@ -56,7 +56,7 @@ None at this time.
 ### Documentation
 
 #### [MODIFY] `README.md`
-- [ ] **TASK-4:** Update the paste rules.
+- [x] **TASK-4:** Update the paste rules.
   - In "When a paste is left alone", replace the "being typed into Markdown or HTML syntax" bullet with one that names the link text, the link's `( )` URL, wikilinks and any unclosed `[` earlier on the line, plus the existing `<` and `href="` cases. Say that this list applies to a normal paste only.
   - In "Choosing for one paste", say that the shortcut shows the menu wherever the cursor is, including inside code and links, so **Plain URL** is the choice there.
 

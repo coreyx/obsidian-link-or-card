@@ -20,17 +20,19 @@ What a normal paste produces is up to you: [**When pasting a URL**](#settings) c
 
 ### Choosing for one paste
 
-Press **Ctrl+Shift+V** (**Cmd+Shift+V** on macOS), or run the command **Paste URL and choose style**, to paste the URL and choose **Card**, **Link** or **Plain URL** from a menu at the cursor. This works whatever the paste setting is, and for URLs on your ignore list too.
+Press **Ctrl+Shift+V** (**Cmd+Shift+V** on macOS), or run the command **Paste URL and choose style**, to paste the URL and choose **Card**, **Link** or **Plain URL** from a menu at the cursor. This works whatever the paste setting is, for URLs on your ignore list too, and wherever the cursor is, including inside code, the frontmatter and a link you are writing. In those places **Plain URL** is the choice that keeps the surrounding syntax intact.
 
 The shortcut takes the place of Obsidian's own *paste as plain text* on the same keys. Clipboard content that is not a single URL is still pasted as plain text, and you can change or remove the shortcut under *Settings → Hotkeys*.
 
 ### When a paste is left alone
 
-A normal paste is not restyled when it is clearly something else:
+A normal paste (Ctrl/Cmd+V) is not restyled when it is clearly something else. These checks do not apply to the shortcut above.
 
 - text is selected and [**Preserve selection as title**](#settings) is off (the paste is left to Obsidian)
 - the cursor is in a code block, inline code or the frontmatter
-- the URL is being typed into Markdown or HTML syntax, such as right after `](`, `<` or `href="`
+- the cursor is inside link syntax: a link's text between `[` and `]`, image alt text, a wikilink, or the link's `( )` URL
+- an unclosed `[` appears anywhere earlier on the line, even a stray one in prose, so `Notes [draft — https://…` keeps the plain URL. Escaped brackets (`\[`) and brackets inside inline code do not count.
+- the URL is being typed into HTML, right after `<` or `href="`
 - the clipboard holds more than a single URL
 - the URL is on your [ignore list](#settings)
 
