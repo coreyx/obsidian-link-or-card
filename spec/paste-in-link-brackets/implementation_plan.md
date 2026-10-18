@@ -49,7 +49,7 @@ None at this time.
 ### Tests
 
 #### [MODIFY] `tests/editorText.test.ts`
-- [ ] **TASK-3:** Add cases to the `canTransformPaste` describe block.
+- [x] **TASK-3:** Add cases to the `canTransformPaste` describe block.
   - Refused: inside an existing link's text (`[some |title](url)`), inside image alt text (`![alt |](img.png)`), a link being typed with and without the auto-paired bracket (`[|]`, `[|`), inside a wikilink (`[[Note|`), after a stray `[` in prose, right after `](`, in the middle of a link's URL (`](https://a.com/|)`), and inside a URL that has its own parentheses (`](https://en.wikipedia.org/wiki/Foo_(bar|`).
   - Still allowed: after a task checkbox (`- [ ] task |`), after a finished link (`see [docs](url) and |`), after a finished link whose URL has parentheses, after an escaped bracket (`\[not a link |`), and after brackets inside a finished inline code span (`` `a[0` and | ``).
 

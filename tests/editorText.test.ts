@@ -68,6 +68,40 @@ describe("canTransformPaste", () => {
     expect(canTransformPaste(doc("<"), 0, 1)).toBe(false);
     expect(canTransformPaste(doc('<img src="'), 0, 10)).toBe(false);
   });
+
+  /** canTransformPaste on a one-line document, with `|` marking the cursor. */
+  const pasteAt = (marked: string) => {
+    const ch = marked.indexOf("|");
+    return canTransformPaste(doc(marked.slice(0, ch) + marked.slice(ch + 1)), 0, ch);
+  };
+
+  it("refuses inside link text, image alt text and wikilinks, finished or still being typed", () => {
+    expect(pasteAt("[some |title](https://example.com)")).toBe(false);
+    expect(pasteAt("![alt |](img.png)")).toBe(false);
+    expect(pasteAt("see [|]")).toBe(false);
+    expect(pasteAt("see [|")).toBe(false);
+    expect(pasteAt("[[Note|")).toBe(false);
+  });
+
+  it("refuses after a stray [ anywhere earlier on the line", () => {
+    expect(pasteAt("Notes [draft — |")).toBe(false);
+  });
+
+  it("refuses inside a link's ( ) URL, including one with parentheses of its own", () => {
+    expect(pasteAt("[title](|")).toBe(false);
+    expect(pasteAt("[title]( |")).toBe(false);
+    expect(pasteAt("[title](https://a.com/|)")).toBe(false);
+    expect(pasteAt("[wiki](https://en.wikipedia.org/wiki/Foo_(bar|")).toBe(false);
+  });
+
+  it("allows prose after brackets that are closed, escaped or inside inline code", () => {
+    expect(pasteAt("- [ ] task |")).toBe(true);
+    expect(pasteAt("- [x] done |")).toBe(true);
+    expect(pasteAt("see [docs](https://example.com) and |")).toBe(true);
+    expect(pasteAt("see [wiki](https://en.wikipedia.org/wiki/Foo_(bar)) and |")).toBe(true);
+    expect(pasteAt("\\[not a link |")).toBe(true);
+    expect(pasteAt("`a[0` and |")).toBe(true);
+  });
 });
 
 describe("titleInSelection", () => {
