@@ -35,7 +35,7 @@ None at this time.
 ### Tests
 
 #### [MODIFY] `tests/editorText.test.ts`
-- [ ] **TASK-2:** Add `pasteAt` cases for mixed runs. The existing inline-code and link cases stay as they are and must still pass.
+- [x] **TASK-2:** Add `pasteAt` cases for mixed runs. The existing inline-code and link cases stay as they are and must still pass.
   - ``` ``a`[`` and | ``` allows.
   - ``` ``a`| ``` and ``` ``a`[| ``` refuse, since the cursor is inside an unfinished span.
   - ```` ```a`` | ```` refuses, since a two-backtick run doesn't close a three-backtick span.
