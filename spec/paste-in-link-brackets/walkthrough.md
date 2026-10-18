@@ -46,6 +46,8 @@ In a vault with this build installed and **When pasting a URL** set to **Link**,
 7. With the cursor between `[` and `]`, press Ctrl/Cmd+Shift+V. The URL is pasted and the Card / Link / Plain URL menu opens; choosing **Plain URL** leaves the bare URL between the brackets.
 8. Inside a fenced code block, press Ctrl/Cmd+Shift+V. The menu opens; choosing **Plain URL** leaves the bare URL in the code block.
 
+**Result:** Corey ran all 8 steps in Obsidian with release 0.7.0 on 2026-10-18, and all 8 passed.
+
 ## Follow-ups
 - **Mixed-length backtick runs:** the odd-backtick check counts backticks rather than code spans, so a line such as `` ``a`[`` and `` is treated as inside inline code and a normal paste after it is left alone. That's harmless (a plain paste), but it could be made exact by checking spans the way `isInsideLinkSyntax` strips them.
 - **Shortcut selection rules:** the shortcut still pastes plain text over a selection it can't use as a title (several lines, already a link, several selections, or Preserve selection as title off). This was left as it is in the plan.
