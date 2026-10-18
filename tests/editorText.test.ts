@@ -102,6 +102,19 @@ describe("canTransformPaste", () => {
     expect(pasteAt("\\[not a link |")).toBe(true);
     expect(pasteAt("`a[0` and |")).toBe(true);
   });
+
+  it("pairs inline code backtick runs by length", () => {
+    expect(pasteAt("``a`[`` and |")).toBe(true);
+    expect(pasteAt("``a`|")).toBe(false);
+    expect(pasteAt("``a`[|")).toBe(false);
+    expect(pasteAt("```a`` |")).toBe(false);
+    expect(pasteAt("`a``b` [|")).toBe(false);
+  });
+
+  it("treats an escaped backtick as text, not inline code", () => {
+    expect(pasteAt("\\` and |")).toBe(true);
+    expect(pasteAt("\\`[|")).toBe(false);
+  });
 });
 
 describe("titleInSelection", () => {
