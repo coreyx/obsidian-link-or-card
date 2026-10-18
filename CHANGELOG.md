@@ -4,6 +4,8 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-18
+
 ### Fixed
 
 - A normal paste now recognises inline code by pairing backtick runs of the same length, as Markdown does. On a line that mixes single and double backticks, such as ``` ``a`b`` ```, or that has an escaped backtick (`` \` ``), a URL pasted in the prose after it is restyled instead of being left as pasted.
@@ -91,7 +93,8 @@ First release.
 - **Ask when pasting a URL** setting.
 - English and Japanese interface text.
 
-[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.7.0...HEAD
+[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.7.1...HEAD
+[0.7.1]: https://github.com/coreyx/obsidian-link-or-card/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.4.0...0.5.0

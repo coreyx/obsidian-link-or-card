@@ -1,5 +1,20 @@
 # Release notes
 
+## 0.7.1
+
+### Pasting after inline code with mixed backticks
+
+A normal paste (Ctrl/Cmd+V) now recognises inline code the way Markdown does, by pairing backtick runs of the same length. Some lines used to make it think the cursor was still inside inline code, so a URL pasted in ordinary text after them was left plain:
+
+- a line with a double-backtick span that contains a single backtick, such as ``` ``a`b`` ```
+- a line with an escaped backtick, such as `` \` ``
+
+A URL pasted after those now becomes a link or card, as set under **When pasting a URL**. Pasting while you're still typing inline code, such as ``use `foo ``, leaves the URL as pasted, as before.
+
+### Upgrading
+
+No action is needed. Cards and settings are unchanged.
+
 ## 0.7.0
 
 ### Pasting into a link you're writing leaves the URL alone
