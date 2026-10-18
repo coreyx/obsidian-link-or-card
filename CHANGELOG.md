@@ -4,6 +4,8 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-18
+
 ### Changed
 
 - **Paste URL and choose style** (Ctrl/Cmd+Shift+V) now opens its menu wherever the cursor is, including inside code blocks, inline code, the frontmatter and link syntax, where it used to paste plain text. Choose **Plain URL** there to keep the surrounding syntax intact.
@@ -85,7 +87,8 @@ First release.
 - **Ask when pasting a URL** setting.
 - English and Japanese interface text.
 
-[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.6.0...HEAD
+[Unreleased]: https://github.com/coreyx/obsidian-link-or-card/compare/0.7.0...HEAD
+[0.7.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/coreyx/obsidian-link-or-card/compare/0.3.0...0.4.0
