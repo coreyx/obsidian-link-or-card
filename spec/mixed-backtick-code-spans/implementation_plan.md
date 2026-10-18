@@ -45,7 +45,7 @@ None at this time.
 ### Docs
 
 #### [MODIFY] `CHANGELOG.md`
-- [ ] **TASK-3:** Add a `### Fixed` entry under `[Unreleased]`: inline code is now recognised by matching backtick runs, so lines that mix single and double backticks, or contain an escaped backtick, are judged correctly when pasting.
+- [x] **TASK-3:** Add a `### Fixed` entry under `[Unreleased]`: inline code is now recognised by matching backtick runs, so lines that mix single and double backticks, or contain an escaped backtick, are judged correctly when pasting.
 
 ## Verification Plan
 

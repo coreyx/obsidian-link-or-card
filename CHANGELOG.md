@@ -4,6 +4,10 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+### Fixed
+
+- A normal paste now recognises inline code by pairing backtick runs of the same length, as Markdown does. On a line that mixes single and double backticks, such as ``` ``a`b`` ```, or that has an escaped backtick (`` \` ``), a URL pasted in the prose after it is restyled instead of being left as pasted.
+
 ## [0.7.0] - 2026-10-18
 
 ### Changed
