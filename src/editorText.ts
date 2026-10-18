@@ -35,14 +35,56 @@ export function isInsideFrontmatter(doc: LineSource, line: number): boolean {
   return false;
 }
 
-/** Whether a URL pasted at (line, ch) is prose we may restyle, rather than part of other syntax. */
+/** Finished inline code spans: a run of backticks, anything, then a run of the same length. */
+const CODE_SPAN = /(`+)[\s\S]*?\1/g;
+
+/**
+ * Whether the text before the cursor leaves it inside link syntax: an unclosed `[`
+ * (link text, image alt text, a wikilink, or a stray bracket in prose), or the
+ * `( )` destination of a link. A URL pasted there is part of the link being
+ * written, so restyling it would break that link. Brackets in finished code
+ * spans and escaped characters do not count.
+ */
+function isInsideLinkSyntax(before: string): boolean {
+  const text = before.replace(CODE_SPAN, "");
+  let brackets = 0;
+  // Open parentheses of the link destination being read; 0 outside one.
+  let parens = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charAt(i);
+    if (char === "\\") {
+      i++;
+    } else if (parens > 0) {
+      // A destination may hold balanced parentheses of its own, as Wikipedia URLs do.
+      if (char === "(") parens++;
+      else if (char === ")") parens--;
+    } else if (char === "[") {
+      brackets++;
+    } else if (char === "]") {
+      brackets = Math.max(0, brackets - 1);
+      if (text.charAt(i + 1) === "(") {
+        parens = 1;
+        i++;
+      }
+    }
+  }
+  return brackets > 0 || parens > 0;
+}
+
+/**
+ * Whether a URL pasted at (line, ch) is prose we may restyle, rather than part of
+ * other syntax: a code block, inline code, the frontmatter, a link's text or its
+ * `( )` URL, or an HTML tag or attribute being typed. Only a normal paste asks;
+ * the paste-and-choose command restyles wherever the user invokes it.
+ */
 export function canTransformPaste(doc: LineSource, line: number, ch: number): boolean {
   const text = doc.getLine(line);
   const before = text.slice(0, ch);
   if (isInsideFrontmatter(doc, line) || isInsideCodeFence(doc, line)) return false;
   if (FENCE.test(stripContainer(text))) return false;
   if ((before.match(/`/g) ?? []).length % 2 === 1) return false;
-  if (/(\]\(\s*|<|=["'])$/.test(before)) return false;
+  if (isInsideLinkSyntax(before)) return false;
+  if (/(<|=["'])$/.test(before)) return false;
   return true;
 }
 

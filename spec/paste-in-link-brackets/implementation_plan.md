@@ -29,7 +29,7 @@ None at this time.
 ### Paste position check
 
 #### [MODIFY] `src/editorText.ts`
-- [ ] **TASK-1:** Add a module-private `isInsideLinkSyntax(before: string): boolean`, with a TSDoc comment, and make `canTransformPaste` return `false` when it is true.
+- [x] **TASK-1:** Add a module-private `isInsideLinkSyntax(before: string): boolean`, with a TSDoc comment, and make `canTransformPaste` return `false` when it is true.
   - Remove finished inline code spans from `before` first, matching backtick runs of equal length (`` /(`+)[\s\S]*?\1/g ``), so brackets and parentheses inside them are ignored. An unclosed span is already refused by the existing odd-backtick check.
   - Walk the remaining text one character at a time:
     - `\` skips the next character.
