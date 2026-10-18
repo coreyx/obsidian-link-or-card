@@ -26,7 +26,7 @@ None at this time.
 ### Paste position checks
 
 #### [MODIFY] `src/editorText.ts`
-- [ ] **TASK-1:** Add a private `scanInlineCode(before)` that walks the text before the cursor and returns `{ prose, open }`.
+- [x] **TASK-1:** Add a private `scanInlineCode(before)` that walks the text before the cursor and returns `{ prose, open }`.
   - Outside a span, a backslash escapes the next character, a backtick included, and both are kept in `prose`.
   - A run of n backticks opens a span that closes at the next run of exactly n backticks. A longer or shorter run inside the span doesn't close it, and the whole span is dropped from `prose`.
   - A run with no closing run before the cursor sets `open: true`.

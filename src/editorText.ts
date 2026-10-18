@@ -35,18 +35,60 @@ export function isInsideFrontmatter(doc: LineSource, line: number): boolean {
   return false;
 }
 
-/** Finished inline code spans: a run of backticks, anything, then a run of the same length. */
-const CODE_SPAN = /(`+)[\s\S]*?\1/g;
+/** Length of the run of backticks starting at index. */
+function backtickRun(text: string, index: number): number {
+  let end = index;
+  while (text.charAt(end) === "`") end++;
+  return end - index;
+}
+
+/** Start of the next run of exactly `length` backticks at or after `from`, or -1. */
+function findBacktickRun(text: string, from: number, length: number): number {
+  for (let i = text.indexOf("`", from); i !== -1; ) {
+    const run = backtickRun(text, i);
+    if (run === length) return i;
+    i = text.indexOf("`", i + run);
+  }
+  return -1;
+}
 
 /**
- * Whether the text before the cursor leaves it inside link syntax: an unclosed `[`
- * (link text, image alt text, a wikilink, or a stray bracket in prose), or the
- * `( )` destination of a link. A URL pasted there is part of the link being
- * written, so restyling it would break that link. Brackets in finished code
- * spans and escaped characters do not count.
+ * The text before the cursor with finished inline code spans removed, and whether
+ * a span is still open at the cursor. Runs are paired by exact length, as in
+ * CommonMark: in ``a`b`` the single backtick is code, not the start of another
+ * span, so counting backticks would misjudge the line. Outside code a backslash
+ * escapes the next character, so \` is a literal backtick. A run with no partner
+ * before the cursor counts as code still being typed.
  */
-function isInsideLinkSyntax(before: string): boolean {
-  const text = before.replace(CODE_SPAN, "");
+function scanInlineCode(before: string): { prose: string; open: boolean } {
+  let prose = "";
+  let i = 0;
+  while (i < before.length) {
+    const char = before.charAt(i);
+    if (char === "\\") {
+      prose += before.slice(i, i + 2);
+      i += 2;
+    } else if (char === "`") {
+      const run = backtickRun(before, i);
+      const close = findBacktickRun(before, i + run, run);
+      if (close === -1) return { prose, open: true };
+      i = close + run;
+    } else {
+      prose += char;
+      i++;
+    }
+  }
+  return { prose, open: false };
+}
+
+/**
+ * Whether prose before the cursor, with code spans already removed, leaves it
+ * inside link syntax: an unclosed `[` (link text, image alt text, a wikilink, or
+ * a stray bracket in prose), or the `( )` destination of a link. A URL pasted
+ * there is part of the link being written, so restyling it would break that
+ * link. Escaped characters do not count.
+ */
+function isInsideLinkSyntax(text: string): boolean {
   let brackets = 0;
   // Open parentheses of the link destination being read; 0 outside one.
   let parens = 0;
@@ -82,8 +124,8 @@ export function canTransformPaste(doc: LineSource, line: number, ch: number): bo
   const before = text.slice(0, ch);
   if (isInsideFrontmatter(doc, line) || isInsideCodeFence(doc, line)) return false;
   if (FENCE.test(stripContainer(text))) return false;
-  if ((before.match(/`/g) ?? []).length % 2 === 1) return false;
-  if (isInsideLinkSyntax(before)) return false;
+  const code = scanInlineCode(before);
+  if (code.open || isInsideLinkSyntax(code.prose)) return false;
   if (/(<|=["'])$/.test(before)) return false;
   return true;
 }
