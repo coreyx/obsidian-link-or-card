@@ -4,6 +4,14 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ## [Unreleased]
 
+### Changed
+
+- **Paste URL and choose style** (Ctrl/Cmd+Shift+V) now opens its menu wherever the cursor is, including inside code blocks, inline code, the frontmatter and link syntax, where it used to paste plain text. Choose **Plain URL** there to keep the surrounding syntax intact.
+
+### Fixed
+
+- A normal paste no longer restyles a URL pasted inside link syntax: a link's text between `[` and `]`, image alt text, a wikilink, or a link's `( )` URL. Any unclosed `[` earlier on the same line, including a stray one in prose, also leaves the URL as pasted. Escaped brackets and brackets inside inline code do not count.
+
 ## [0.6.0] - 2026-10-10
 
 ### Added

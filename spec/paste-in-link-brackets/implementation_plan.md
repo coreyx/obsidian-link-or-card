@@ -61,7 +61,7 @@ None at this time.
   - In "Choosing for one paste", say that the shortcut shows the menu wherever the cursor is, including inside code and links, so **Plain URL** is the choice there.
 
 #### [MODIFY] `CHANGELOG.md`
-- [ ] **TASK-5:** Under `## [Unreleased]`, add a `### Fixed` entry for the new positions where a normal paste is left alone, including the stray `[` behavior, and a `### Changed` entry saying the shortcut now shows the menu everywhere, including inside code blocks, inline code and the frontmatter.
+- [x] **TASK-5:** Under `## [Unreleased]`, add a `### Fixed` entry for the new positions where a normal paste is left alone, including the stray `[` behavior, and a `### Changed` entry saying the shortcut now shows the menu everywhere, including inside code blocks, inline code and the frontmatter.
 
 ## Verification Plan
 
