@@ -57,7 +57,7 @@ None at this time.
   - It passes `sites.youtube` on to `extractMetadata`.
 
 #### [MODIFY] `src/metadata.ts`
-- [ ] **TASK-5:** `extractMetadata(html, pageUrl, youtube = true)` reads a YouTube handle only when `youtube` is on. Everything else, the channel name in `author` included, is read as before.
+- [x] **TASK-5:** `extractMetadata(html, pageUrl, youtube = true)` reads a YouTube handle only when `youtube` is on. Everything else, the channel name in `author` included, is read as before.
 
 #### [MODIFY] `main.ts`
 - [ ] **TASK-6:** `fetchWithNotice` passes `specialSites(this.settings)` to `fetchMetadata`. That one call serves pasting, the paste-and-choose command and converting a link to a card, so all three follow the settings.

@@ -124,8 +124,12 @@ function findHandle(doc: Document, pageUrl: string): string | undefined {
   return youtubeHandle(profile?.getAttribute("href") ?? profile?.getAttribute("content"), pageUrl) ?? youtubeHandle(pageUrl, pageUrl);
 }
 
-/** DOMParser documents are inert: no scripts run and no subresources load. */
-export function extractMetadata(html: string, pageUrl: string): CardData {
+/**
+ * DOMParser documents are inert: no scripts run and no subresources load.
+ * `youtube` is the YouTube switch under Special link handling; off, no YouTube
+ * handle is read, though the channel name still is, from the author markup.
+ */
+export function extractMetadata(html: string, pageUrl: string, youtube = true): CardData {
   const doc = new DOMParser().parseFromString(html, "text/html");
 
   const metas = new Map<string, string>();
@@ -141,7 +145,7 @@ export function extractMetadata(html: string, pageUrl: string): CardData {
   const data: CardData = { url: pageUrl };
   const title = clean(pick("og:title", "twitter:title") ?? doc.title);
   const author = findAuthor(doc, metas);
-  const handle = findHandle(doc, pageUrl);
+  const handle = youtube ? findHandle(doc, pageUrl) : undefined;
   const description = pick("og:description", "twitter:description", "description");
   const image = resolveUrl(pick("og:image", "og:image:url", "og:image:secure_url", "twitter:image", "twitter:image:src"), base);
   const favicon = findIcon(doc, base) ?? resolveUrl("/favicon.ico", pageUrl);
