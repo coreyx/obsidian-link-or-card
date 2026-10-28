@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_SETTINGS, resolveSettings } from "../src/settingsData";
+import { ALL_SPECIAL_SITES, DEFAULT_SETTINGS, resolveSettings, specialSites } from "../src/settingsData";
 
 describe("resolveSettings", () => {
   it("returns the defaults when nothing was saved", () => {
@@ -37,5 +37,22 @@ describe("resolveSettings", () => {
 
   it("falls back to the default for a paste style it does not know", () => {
     expect(resolveSettings({ pasteStyle: "banner" }).pasteStyle).toBe("link");
+  });
+});
+
+describe("special link handling", () => {
+  it("is on for every site by default, including for data saved before it existed", () => {
+    expect(DEFAULT_SETTINGS).toMatchObject({ specialLinkHandling: true, specialLinkReddit: true, specialLinkYouTube: true });
+    const old = resolveSettings({ pasteStyle: "card", ignoredUrls: "", preserveSelectionAsTitle: true });
+    expect(specialSites(old)).toEqual(ALL_SPECIAL_SITES);
+  });
+
+  it("follows each site's own switch", () => {
+    expect(specialSites({ ...DEFAULT_SETTINGS, specialLinkReddit: false })).toEqual({ reddit: false, youtube: true });
+    expect(specialSites({ ...DEFAULT_SETTINGS, specialLinkYouTube: false })).toEqual({ reddit: true, youtube: false });
+  });
+
+  it("is off for every site while the main switch is off, whatever the sites say", () => {
+    expect(specialSites({ ...DEFAULT_SETTINGS, specialLinkHandling: false })).toEqual({ reddit: false, youtube: false });
   });
 });

@@ -219,3 +219,19 @@ describe("Reddit share links", () => {
     expect(offline).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("Reddit switched off", () => {
+  const OFF = { reddit: false, youtube: true };
+
+  it("fetches posts, share links and subreddit pages like any other page, with one request each", async () => {
+    for (const url of [POST, SHARE, "https://www.reddit.com/r/ExampleSub/"]) {
+      const request = reddit(EMBED, SHARE_BOT_CHECK);
+      expect((await fetchMetadata(url, request, 1000, OFF))?.title).toBe("Reddit");
+      expect(request.mock.calls.map(([called]) => called)).toEqual([url]);
+    }
+  });
+
+  it("returns null, without a slug guess, when the page request fails", async () => {
+    expect(await fetchMetadata(POST, reddit(EMBED, new Error("offline")), 1000, OFF)).toBeNull();
+  });
+});

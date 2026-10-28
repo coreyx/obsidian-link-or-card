@@ -65,7 +65,7 @@ None at this time.
 ### Tests
 
 #### [MODIFY] `tests/settingsData.test.ts`, `tests/reddit.test.ts`, `tests/metadata.test.ts`, `tests/i18n.test.ts` if it checks string keys
-- [ ] **TASK-7:** Cover, with made-up data only:
+- [x] **TASK-7:** Cover, with made-up data only:
   - The new settings default to on, saved values are kept, and data saved before they existed gets them as on.
   - `specialSites` gives each site's own setting, and all off when the main setting is off.
   - With `reddit: false`, a Reddit post, a share link and a subreddit page each make one request, to the link itself, and keep the page's own title.

@@ -148,6 +148,13 @@ describe("extractMetadata handle", () => {
     expect(extractMetadata(html, "https://m.youtube.com/@jawed/videos?view=0").handle).toBe("@jawed");
   });
 
+  it("is left out when the YouTube switch is off, while the channel name is kept", () => {
+    const meta = extractMetadata(channel("http://www.youtube.com/@jawed"), VIDEO, false);
+    expect(meta.author).toBe("jawed");
+    expect(meta.handle).toBeUndefined();
+    expect(extractMetadata(channel("https://www.youtube.com/channel/UC4QobU6STFB0P71PMvOGN5A"), "https://www.youtube.com/@jawed", false).handle).toBeUndefined();
+  });
+
   it("is left out when YouTube gives no handle", () => {
     expect(extractMetadata(channel("https://www.youtube.com/channel/UC4QobU6STFB0P71PMvOGN5A"), VIDEO).handle).toBeUndefined();
     expect(extractMetadata(page(""), VIDEO).handle).toBeUndefined();
