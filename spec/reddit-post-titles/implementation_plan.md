@@ -72,7 +72,7 @@ None at this time.
   - `redditMetadata` handles a share link whose post wasn't found by returning the page's result unchanged.
 
 #### [MODIFY] `src/fetchMetadata.ts`
-- [ ] **TASK-8:** For a share link, `fetchMetadata` requests the page as today, keeping its HTML, then looks for the post with `postInBotCheck`. When it finds one, it asks oEmbed about that post under its own timeout and builds the card with `redditMetadata` as for a pasted post, so a failed lookup falls back to the slug guess. The card keeps the share link as its `url`. When no post is found, or the page request fails, the result is what it is today.
+- [x] **TASK-8:** For a share link, `fetchMetadata` requests the page as today, keeping its HTML, then looks for the post with `postInBotCheck`. When it finds one, it asks oEmbed about that post under its own timeout and builds the card with `redditMetadata` as for a pasted post, so a failed lookup falls back to the slug guess. The card keeps the share link as its `url`. When no post is found, or the page request fails, the result is what it is today.
 
 #### [MODIFY] `tests/reddit.test.ts`
 - [ ] **TASK-9:** Cover, with made-up data only:
