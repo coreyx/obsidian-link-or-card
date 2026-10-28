@@ -52,7 +52,7 @@ None at this time.
 ### Docs
 
 #### [MODIFY] `README.md`
-- [ ] **TASK-5:** Add a short note that Reddit posts are titled `<post title> - r/<subreddit>` with the poster as the author, and which Reddit links can't be looked up.
+- [x] **TASK-5:** Add a short note that Reddit posts are titled `<post title> - r/<subreddit>` with the poster as the author, and which Reddit links can't be looked up.
 
 #### [MODIFY] `CHANGELOG.md`
 - [ ] **TASK-6:** Add an `### Added` entry under `[Unreleased]` for Reddit post and subreddit titles.

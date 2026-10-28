@@ -97,6 +97,13 @@ site: Obsidian
 
 To build a card or a titled link, the plugin sends one `GET` request to the URL, using Obsidian's `requestUrl`, and reads the page's `<title>`, Open Graph and Twitter card tags, and its author markup. Nothing is sent anywhere else.
 
+Reddit posts get a second request, also to reddit.com. Reddit shows requests that are not from a browser a bot check titled just "Reddit", so the plugin also asks Reddit's oEmbed service (`https://www.reddit.com/oembed`) about the post, at the same time as the page request:
+
+- A post is titled `<post title> - r/<subreddit>`, as on the site, and its card's `author` is the poster, as `u/<name>`. Links to a comment get the post's title. If the lookup fails, the title is guessed from the words in the URL.
+- A subreddit's front page, such as `reddit.com/r/ObsidianMD`, is titled `r/ObsidianMD`.
+- Short links (`redd.it/…`), links without the subreddit (`reddit.com/comments/…`) and app share links (`/r/<subreddit>/s/…`) can't be looked up, and keep the page's own title, usually "Reddit".
+- Reddit cards have no description or picture, since Reddit only gives those to browsers.
+
 With **When pasting a URL** set to **Link** (the default) or **Card**, that request is made as soon as you paste a URL, without asking. No request is made when:
 
 - the URL is on your ignore list
