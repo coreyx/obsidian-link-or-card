@@ -26,7 +26,7 @@ None at this time.
 ### Reddit lookup
 
 #### [NEW] `src/reddit.ts`
-- [ ] **TASK-1:** Add `parseRedditUrl(url)`, which recognises URLs on `reddit.com` and its subdomains (`www`, `old`, `new`, `np`, `m`), on http or https:
+- [x] **TASK-1:** Add `parseRedditUrl(url)`, which recognises URLs on `reddit.com` and its subdomains (`www`, `old`, `new`, `np`, `m`), on http or https:
   - A post: `/r/<sub>/comments/<id>` with an optional slug and anything after it, such as a comment id. It returns the subreddit as written, the slug, and the oEmbed lookup URL. That URL is built from `https://www.reddit.com` plus the post's path, with the query and fragment dropped, so share-tracking parameters and `old.`/`m.` hosts don't matter.
   - A subreddit page: exactly `/r/<sub>` or `/r/<sub>/`.
   - Anything else, including share links, short links and user pages, returns null.
