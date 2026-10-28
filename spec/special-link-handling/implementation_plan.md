@@ -78,7 +78,7 @@ None at this time.
 - [x] **TASK-8:** Under **Settings**, describe **Special link handling** and its site list, saying what each site's handling does and what turning it off changes. In **Network use**, note that turning Reddit off stops the request to Reddit's oEmbed service.
 
 #### [MODIFY] `CHANGELOG.md`
-- [ ] **TASK-9:** Add an `### Added` entry under `[Unreleased]` for the setting and its site list.
+- [x] **TASK-9:** Add an `### Added` entry under `[Unreleased]` for the setting and its site list.
 
 ## Verification Plan
 
