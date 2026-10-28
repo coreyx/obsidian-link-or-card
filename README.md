@@ -101,7 +101,8 @@ Reddit posts get a second request, also to reddit.com. Reddit shows requests tha
 
 - A post is titled `<post title> - r/<subreddit>`, as on the site, and its card's `author` is the poster, as `u/<name>`. Links to a comment get the post's title. If the lookup fails, the title is guessed from the words in the URL.
 - A subreddit's front page, such as `reddit.com/r/ObsidianMD`, is titled `r/ObsidianMD`.
-- Short links (`redd.it/…`), links without the subreddit (`reddit.com/comments/…`) and app share links (`/r/<subreddit>/s/…`) can't be looked up, and keep the page's own title, usually "Reddit".
+- A share link, the `reddit.com/r/<subreddit>/s/…` link that Reddit's **Share** button copies, gets its post's title too. The plugin can only ask oEmbed once the page request has found which post the link leads to, so a share link can take up to twice as long. The note keeps the share link as you pasted it.
+- Short links (`redd.it/…`) and links without the subreddit (`reddit.com/comments/…`) can't be looked up, and keep the page's own title, usually "Reddit".
 - Reddit cards have no description or picture, since Reddit only gives those to browsers.
 
 With **When pasting a URL** set to **Link** (the default) or **Card**, that request is made as soon as you paste a URL, without asking. No request is made when:

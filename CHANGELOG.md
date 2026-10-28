@@ -6,7 +6,7 @@ All notable changes to this plugin are recorded here. The format follows [Keep a
 
 ### Added
 
-- Reddit posts are titled `<post title> - r/<subreddit>`, as on the site, instead of just "Reddit", and their cards name the poster as `author: u/<name>`. The title comes from Reddit's oEmbed service, which the plugin asks at the same time as the page; if it can't be reached, the title is guessed from the URL. A subreddit's front page is titled `r/<subreddit>`. Short `redd.it` links, links without the subreddit and app share links keep the page's own title.
+- Reddit posts are titled `<post title> - r/<subreddit>`, as on the site, instead of just "Reddit", and their cards name the poster as `author: u/<name>`. The title comes from Reddit's oEmbed service, which the plugin asks at the same time as the page; if it can't be reached, the title is guessed from the URL. A subreddit's front page is titled `r/<subreddit>`. Share links from Reddit's **Share** button get their post's title as well, though they take longer, since the post is looked up only after the link's page has been fetched. Short `redd.it` links and links without the subreddit keep the page's own title.
 
 ## [0.7.1] - 2026-10-18
 

@@ -83,7 +83,7 @@ None at this time.
   - When the page names no post, or the page request fails, a share link keeps today's result and no oEmbed request is made.
 
 #### [MODIFY] `README.md` and `CHANGELOG.md`
-- [ ] **TASK-10:** Update the Reddit notes in both: share links get the post's title, can take longer, and short links and bare `/comments/<id>` links still can't be looked up.
+- [x] **TASK-10:** Update the Reddit notes in both: share links get the post's title, can take longer, and short links and bare `/comments/<id>` links still can't be looked up.
 
 ## Verification Plan
 
