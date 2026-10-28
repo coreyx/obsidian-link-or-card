@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { fetchMetadata } from "../src/fetchMetadata";
 import type { HttpResponse } from "../src/fetchMetadata";
-import { parseRedditOembed, parseRedditUrl } from "../src/reddit";
+import { parseRedditOembed, parseRedditUrl, postInBotCheck } from "../src/reddit";
 
 // Every post, subreddit and username here is made up.
 const POST = "https://www.reddit.com/r/ExampleSub/comments/abc123/my_first_post/";
@@ -161,5 +161,61 @@ describe("fetchMetadata for Reddit", () => {
       expect(request).toHaveBeenCalledTimes(1);
       expect(request).toHaveBeenCalledWith(url);
     }
+  });
+});
+
+const SHARE = "https://www.reddit.com/r/ExampleSub/s/AbCdEf123";
+
+/** The bot check a share link lands on, which names the post as its form's address. */
+const SHARE_BOT_CHECK = response(
+  '<html><head><title>Reddit</title><link rel="icon" href="/icon-example.png"></head><body>' +
+    '<form method="POST" action="/svc/example-check"></form>' +
+    '<form method="GET" action="/r/ExampleSub/comments/abc123/my_first_post/?share_id=example&amp;utm_source=share"></form>' +
+    "</body></html>",
+  { "content-type": "text/html; charset=utf-8" },
+);
+
+describe("Reddit share links", () => {
+  it("are recognized on any Reddit host, with or without the trailing slash", () => {
+    expect(parseRedditUrl(SHARE)).toEqual({ kind: "share", subreddit: "ExampleSub" });
+    expect(parseRedditUrl(`${SHARE}/`)).toEqual({ kind: "share", subreddit: "ExampleSub" });
+    expect(parseRedditUrl("https://old.reddit.com/r/ExampleSub/s/AbCdEf123")).toEqual({ kind: "share", subreddit: "ExampleSub" });
+    expect(parseRedditUrl(`${SHARE}/extra`)).toBeNull();
+  });
+
+  it("lead to the post their bot-check page names, skipping forms that aren't a post", () => {
+    const html = new TextDecoder().decode(SHARE_BOT_CHECK.arrayBuffer);
+    expect(postInBotCheck(html)).toEqual({ kind: "post", subreddit: "ExampleSub", slug: "my_first_post", oembedUrl: OEMBED });
+    expect(postInBotCheck("<form action='https://www.reddit.com/r/ExampleSub/comments/abc123/'></form>")).toMatchObject({ oembedUrl: OEMBED });
+    expect(postInBotCheck('<form action="/svc/example-check"></form>')).toBeNull();
+    expect(postInBotCheck('<form action="https://example.com/r/ExampleSub/comments/abc123/"></form>')).toBeNull();
+    expect(postInBotCheck("<html><title>Reddit</title></html>")).toBeNull();
+  });
+
+  it("are titled from oEmbed after the page request, and keep the share link as the URL", async () => {
+    const request = reddit(EMBED, SHARE_BOT_CHECK);
+    const meta = await fetchMetadata(SHARE, request);
+    expect(request.mock.calls.map(([url]) => url)).toEqual([SHARE, OEMBED]);
+    expect(meta).toEqual({
+      url: SHARE,
+      title: "My first post - r/ExampleSub",
+      author: "u/example_user",
+      favicon: "https://www.reddit.com/icon-example.png",
+    });
+  });
+
+  it("fall back to the slug in the page's form when the lookup fails", async () => {
+    const meta = await fetchMetadata(SHARE, reddit(new Error("offline"), SHARE_BOT_CHECK));
+    expect(meta).toMatchObject({ url: SHARE, title: "my first post - r/ExampleSub" });
+  });
+
+  it("keep today's result, with no lookup, when the page names no post or the request fails", async () => {
+    const noPost = reddit(EMBED);
+    expect((await fetchMetadata(SHARE, noPost))?.title).toBe("Reddit");
+    expect(noPost).toHaveBeenCalledTimes(1);
+
+    const offline = reddit(EMBED, new Error("offline"));
+    expect(await fetchMetadata(SHARE, offline)).toBeNull();
+    expect(offline).toHaveBeenCalledTimes(1);
   });
 });
