@@ -1,6 +1,8 @@
 import type { CardData } from "./cardBlock";
 import { decodeHtml, extractMetadata } from "./metadata";
 import { parseRedditOembed, parseRedditUrl, postInBotCheck, redditMetadata } from "./reddit";
+import { ALL_SPECIAL_SITES } from "./settingsData";
+import type { SpecialSites } from "./settingsData";
 import type { RedditEmbed } from "./reddit";
 
 /** The slice of Obsidian's RequestUrlResponse this module needs, so tests can stub it. */
@@ -52,10 +54,10 @@ async function fetchHtml(url: string, request: Requester, timeoutMs: number): Pr
   }
 }
 
-/** The page's metadata, or null on any failure. */
-async function fetchPage(url: string, request: Requester, timeoutMs: number): Promise<CardData | null> {
+/** The page's metadata, or null on any failure. `youtube` is passed on to extractMetadata(). */
+async function fetchPage(url: string, request: Requester, timeoutMs: number, youtube: boolean): Promise<CardData | null> {
   const html = await fetchHtml(url, request, timeoutMs);
-  return html === null ? null : extractMetadata(html, url);
+  return html === null ? null : extractMetadata(html, url, youtube);
 }
 
 /** Reddit's oEmbed answer for a post, or null on any failure. */
@@ -91,17 +93,22 @@ async function fetchRedditShare(url: string, request: Requester, timeoutMs: numb
  * {@link redditMetadata}), with the oEmbed lookup run alongside the page request
  * so the paste waits no longer than before. A share link's lookup has to follow
  * its page request instead, so it can take up to twice as long.
+ *
+ * `sites` says which sites get that handling, from the Special link handling
+ * settings. A site that's off goes through the normal page fetch, as before the
+ * site's handling existed.
  */
 export async function fetchMetadata(
   url: string,
   request: Requester,
   timeoutMs: number = DEFAULT_TIMEOUT_MS,
+  sites: SpecialSites = ALL_SPECIAL_SITES,
 ): Promise<CardData | null> {
-  const reddit = parseRedditUrl(url);
-  if (reddit === null) return fetchPage(url, request, timeoutMs);
+  const reddit = sites.reddit ? parseRedditUrl(url) : null;
+  if (reddit === null) return fetchPage(url, request, timeoutMs, sites.youtube);
   if (reddit.kind === "share") return fetchRedditShare(url, request, timeoutMs);
   const [page, embed] = await Promise.all([
-    fetchPage(url, request, timeoutMs),
+    fetchPage(url, request, timeoutMs, sites.youtube),
     reddit.kind === "post" ? fetchRedditEmbed(reddit.oembedUrl, request, timeoutMs) : Promise.resolve(null),
   ]);
   return redditMetadata(url, reddit, page, embed);

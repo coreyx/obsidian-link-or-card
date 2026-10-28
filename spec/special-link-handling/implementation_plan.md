@@ -52,7 +52,7 @@ None at this time.
 ### Behavior
 
 #### [MODIFY] `src/fetchMetadata.ts`
-- [ ] **TASK-4:** `fetchMetadata` takes a fourth parameter, `sites: SpecialSites`, defaulting to `ALL_SPECIAL_SITES`:
+- [x] **TASK-4:** `fetchMetadata` takes a fourth parameter, `sites: SpecialSites`, defaulting to `ALL_SPECIAL_SITES`:
   - With `sites.reddit` off, it skips `parseRedditUrl`, so Reddit links take the normal page fetch, making exactly one request.
   - It passes `sites.youtube` on to `extractMetadata`.
 
