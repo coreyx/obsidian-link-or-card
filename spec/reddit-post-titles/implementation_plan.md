@@ -42,7 +42,7 @@ None at this time.
 ### Tests
 
 #### [NEW] `tests/reddit.test.ts`
-- [ ] **TASK-4:** Cover, with made-up posts, usernames and subreddits only:
+- [x] **TASK-4:** Cover, with made-up posts, usernames and subreddits only:
   - `parseRedditUrl` on post URLs on `www`, `old` and `m` hosts, an all-lowercase path, a share-tracking query, a comment permalink, and subreddit pages with and without the trailing slash. Short links, bare `/comments/<id>`, share links, user pages and other sites return null.
   - A successful oEmbed response gives `<title> - r/<Sub>` with the embed's capitalisation, `u/<name>` as the author, and the favicon from the page.
   - A failed lookup falls back to the slug guess, and keeps a real page title when the page has one. With no slug, it keeps the page's result.
