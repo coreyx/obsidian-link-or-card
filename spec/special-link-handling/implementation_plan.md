@@ -35,7 +35,7 @@ None at this time.
 ### Settings
 
 #### [MODIFY] `src/settingsData.ts`
-- [ ] **TASK-1:** Add the settings and the switch they make:
+- [x] **TASK-1:** Add the settings and the switch they make:
   - Three boolean settings, all defaulting to `true`: `specialLinkHandling`, `specialLinkReddit` and `specialLinkYouTube`. They're kept as separate top-level keys so Obsidian's declarative settings can read and save them directly, and so `resolveSettings` fills in a site added later as on.
   - A `SpecialSites` type, `{ reddit: boolean; youtube: boolean }`, with `ALL_SPECIAL_SITES` (all `true`), and `specialSites(settings)`, which gives each site's setting, or all `false` when `specialLinkHandling` is off.
 

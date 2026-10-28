@@ -9,7 +9,14 @@ describe("resolveSettings", () => {
   });
 
   it("keeps what was saved", () => {
-    const saved = { pasteStyle: "ask", ignoredUrls: "example.com", preserveSelectionAsTitle: false };
+    const saved = {
+      pasteStyle: "ask",
+      ignoredUrls: "example.com",
+      preserveSelectionAsTitle: false,
+      specialLinkHandling: false,
+      specialLinkReddit: false,
+      specialLinkYouTube: false,
+    };
     expect(resolveSettings(saved)).toEqual(saved);
   });
 
