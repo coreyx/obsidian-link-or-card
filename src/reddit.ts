@@ -15,7 +15,9 @@ export type RedditTarget =
       /** Reddit's oEmbed lookup for the post, which isn't behind the bot check. */
       oembedUrl: string;
     }
-  | { kind: "subreddit"; subreddit: string };
+  | { kind: "subreddit"; subreddit: string }
+  /** A link from Reddit's Share button, which redirects to the post it names. */
+  | { kind: "share"; subreddit: string };
 
 /** Hosts that serve posts and subreddits at the same paths as www.reddit.com. */
 const REDDIT_HOSTS = new Set(["reddit.com", "www.reddit.com", "old.reddit.com", "new.reddit.com", "np.reddit.com", "m.reddit.com"]);
@@ -27,6 +29,7 @@ const REDDIT_HOSTS = new Set(["reddit.com", "www.reddit.com", "old.reddit.com", 
  */
 const POST_PATH = /^\/r\/(\w+)\/comments\/([a-z0-9]+)(?:\/(?!comment\/[^/])([^/]+))?(?:\/|$)/i;
 const SUBREDDIT_PATH = /^\/r\/(\w+)\/?$/;
+const SHARE_PATH = /^\/r\/(\w+)\/s\/\w+\/?$/;
 
 /** The slug as text, or undefined when it is missing or its percent-encoding is broken. */
 function decodeSlug(slug: string | undefined): string | undefined {
@@ -39,13 +42,14 @@ function decodeSlug(slug: string | undefined): string | undefined {
 }
 
 /**
- * Recognizes a Reddit post or a subreddit's front page. For a post, the oEmbed
- * lookup asks about the canonical post URL: the slug, query, fragment and any
- * comment id are dropped, since oEmbed answers with the post's title for a comment
- * permalink too, and the host is always www so `old.` and `m.` links work alike.
- * Short links (`redd.it`), bare `/comments/<id>` links, app share links
- * (`/r/<sub>/s/<code>`) and user pages give null: oEmbed rejects the first two,
- * and the others name no post it can look up.
+ * Recognizes a Reddit post, a subreddit's front page, or a share link
+ * (`/r/<sub>/s/<code>`). For a post, the oEmbed lookup asks about the canonical
+ * post URL: the slug, query, fragment and any comment id are dropped, since oEmbed
+ * answers with the post's title for a comment permalink too, and the host is
+ * always www so `old.` and `m.` links work alike. oEmbed rejects a share link, so
+ * its post is found from the page it redirects to; see {@link postInBotCheck}.
+ * Short links (`redd.it`), bare `/comments/<id>` links and user pages give null:
+ * they name no subreddit, which oEmbed needs, or no post.
  */
 export function parseRedditUrl(url: string): RedditTarget | null {
   let parsed: URL;
@@ -72,6 +76,32 @@ export function parseRedditUrl(url: string): RedditTarget | null {
   }
   const subreddit = SUBREDDIT_PATH.exec(parsed.pathname);
   if (subreddit !== null) return { kind: "subreddit", subreddit: subreddit[1] ?? "" };
+  const share = SHARE_PATH.exec(parsed.pathname);
+  if (share !== null) return { kind: "share", subreddit: share[1] ?? "" };
+  return null;
+}
+
+const FORM_ACTION = /<form\b[^>]*?\baction\s*=\s*(["'])(.*?)\1/gi;
+
+/**
+ * The post a share link leads to, read from the bot-check page Obsidian lands on
+ * after following the link's redirect. That page names the post's path as the
+ * address of its form, such as `<form action="/r/<sub>/comments/<id>/<slug>/…">`,
+ * which is the only place the post appears in it. This is undocumented markup, so
+ * any form whose address isn't a Reddit post is skipped, and a page without one
+ * gives null.
+ */
+export function postInBotCheck(html: string): Extract<RedditTarget, { kind: "post" }> | null {
+  for (const match of html.matchAll(FORM_ACTION)) {
+    let action: URL;
+    try {
+      action = new URL((match[2] ?? "").replace(/&amp;/g, "&"), "https://www.reddit.com/");
+    } catch {
+      continue;
+    }
+    const target = parseRedditUrl(action.href);
+    if (target?.kind === "post") return target;
+  }
   return null;
 }
 
@@ -123,11 +153,15 @@ const hasRealTitle = (page: CardData | null): boolean =>
  *   guessed from the URL's slug as `<slug words> - r/<sub>`, and with no slug the
  *   page's result stands.
  * - A subreddit page is titled `r/<sub>` as written in the URL.
+ * - A share link whose post wasn't found keeps the page's result. One whose post
+ *   was found is passed in as that post.
  * Null only when there is neither a page nor anything to title it with.
  */
 export function redditMetadata(url: string, target: RedditTarget, page: CardData | null, embed: RedditEmbed | null): CardData | null {
   const base: CardData = page ?? { url };
   if (target.kind === "subreddit") return { ...base, title: `r/${target.subreddit}` };
+  // A share link reaches here only when its post couldn't be found.
+  if (target.kind === "share") return page;
   if (embed !== null) {
     const data: CardData = { ...base, title: `${embed.title} - r/${embed.subreddit ?? target.subreddit}` };
     if (embed.author !== undefined) data.author = `u/${embed.author}`;

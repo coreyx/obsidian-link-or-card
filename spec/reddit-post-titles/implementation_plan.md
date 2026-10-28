@@ -66,7 +66,7 @@ None at this time.
 ### Share links
 
 #### [MODIFY] `src/reddit.ts`
-- [ ] **TASK-7:** Recognize share links and read the post they lead to:
+- [x] **TASK-7:** Recognize share links and read the post they lead to:
   - `parseRedditUrl` returns `{ kind: "share", subreddit }` for `/r/<sub>/s/<code>` (with or without a trailing slash) on the same hosts, instead of null.
   - Add `postInBotCheck(html)`, which returns the `RedditTarget` for the first form `action` in the page whose path is a post (`/r/<sub>/comments/<id>…`), parsed as if it were on www.reddit.com, or null when there is none.
   - `redditMetadata` handles a share link whose post wasn't found by returning the page's result unchanged.
