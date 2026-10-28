@@ -92,6 +92,14 @@ site: Obsidian
   - closing the menu, when there is one, keeps the link
 
   The paste is still left to Obsidian when the selection spans more than one line, already contains a link, or there are several selections. Turn the setting off to leave every paste over a selection to Obsidian.
+- **Special link handling** — on by default. Some sites get their own handling, for details their pages don't give the plugin. While this is on, the sites are listed under it, each with its own toggle, also on by default. Turn this off to treat every link like any other page, or turn one site off to do that for that site alone.
+
+  | Site | Its handling | With it off |
+  | --- | --- | --- |
+  | **Reddit** | Posts and share links are titled as on Reddit, with the poster as the card's author, and subreddit pages as `r/<subreddit>` (see [Network use](#network-use)) | Reddit links are titled just "Reddit", and nothing is sent to Reddit's oEmbed service |
+  | **YouTube** | Cards store the channel's handle in a `handle` line | Cards show the channel name without storing the handle |
+
+  Cards you already have don't change either way, since a card is only fetched when it's created.
 
 ## Network use
 
@@ -104,6 +112,8 @@ Reddit posts get a second request, also to reddit.com. Reddit shows requests tha
 - A share link, the `reddit.com/r/<subreddit>/s/…` link that Reddit's **Share** button copies, gets its post's title too. The plugin can only ask oEmbed once the page request has found which post the link leads to, so a share link can take up to twice as long. The note keeps the share link as you pasted it.
 - Short links (`redd.it/…`) and links without the subreddit (`reddit.com/comments/…`) can't be looked up, and keep the page's own title, usually "Reddit".
 - Reddit cards have no description or picture, since Reddit only gives those to browsers.
+
+Turning off **Reddit**, or **Special link handling**, under [Settings](#settings) stops the oEmbed request, so a Reddit link gets one request, as any other page does.
 
 With **When pasting a URL** set to **Link** (the default) or **Card**, that request is made as soon as you paste a URL, without asking. No request is made when:
 
