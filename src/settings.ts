@@ -16,6 +16,14 @@ const pasteStyleOptions = (t: Strings): Record<PasteStyle, string> => ({
 const IGNORED_URLS_PLACEHOLDER = "example.com\ngithub.com/my-org";
 const IGNORED_URLS_ROWS = 4;
 
+type SiteKey = "specialLinkReddit" | "specialLinkYouTube";
+
+/** The sites listed under Special link handling, in the order shown. */
+const specialSiteSettings = (t: Strings): { key: SiteKey; name: string; desc: string }[] => [
+  { key: "specialLinkReddit", name: t.settingRedditName, desc: t.settingRedditDesc },
+  { key: "specialLinkYouTube", name: t.settingYouTubeName, desc: t.settingYouTubeDesc },
+];
+
 export class LinkOrCardSettingTab extends PluginSettingTab {
   constructor(
     app: App,
@@ -31,6 +39,7 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
    */
   getSettingDefinitions(): SettingDefinitionItem[] {
     const t = this.plugin.strings;
+    const specialLinksOn = () => this.plugin.settings.specialLinkHandling;
     return [
       {
         name: t.settingPasteStyleName,
@@ -62,7 +71,37 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
           defaultValue: DEFAULT_SETTINGS.preserveSelectionAsTitle,
         },
       },
+      {
+        name: t.settingSpecialLinksName,
+        desc: t.settingSpecialLinksDesc,
+        control: {
+          type: "toggle",
+          key: "specialLinkHandling",
+          defaultValue: DEFAULT_SETTINGS.specialLinkHandling,
+        },
+      },
+      {
+        type: "group",
+        heading: t.settingSpecialSitesHeading,
+        visible: specialLinksOn,
+        items: specialSiteSettings(t).map(({ key, name, desc }) => ({
+          name,
+          desc,
+          visible: specialLinksOn,
+          control: { type: "toggle", key, defaultValue: DEFAULT_SETTINGS[key] },
+        })),
+      },
     ];
+  }
+
+  /**
+   * Saves as the base class does, then shows or hides the site list, whose
+   * `visible` follows Special link handling. Without this, the list would only
+   * catch up the next time the tab is opened.
+   */
+  async setControlValue(key: string, value: unknown): Promise<void> {
+    await super.setControlValue(key, value);
+    this.refreshDomState();
   }
 
   /** Fallback for Obsidian versions before 1.13, which do not read getSettingDefinitions(). */
@@ -107,5 +146,31 @@ export class LinkOrCardSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }),
       );
+
+    new Setting(containerEl)
+      .setName(t.settingSpecialLinksName)
+      .setDesc(t.settingSpecialLinksDesc)
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.specialLinkHandling).onChange(async (value) => {
+          this.plugin.settings.specialLinkHandling = value;
+          await this.plugin.saveSettings();
+          // The site list below is only drawn while this is on.
+          this.display();
+        }),
+      );
+
+    if (!this.plugin.settings.specialLinkHandling) return;
+    new Setting(containerEl).setName(t.settingSpecialSitesHeading).setHeading();
+    for (const { key, name, desc } of specialSiteSettings(t)) {
+      new Setting(containerEl)
+        .setName(name)
+        .setDesc(desc)
+        .addToggle((toggle) =>
+          toggle.setValue(this.plugin.settings[key]).onChange(async (value) => {
+            this.plugin.settings[key] = value;
+            await this.plugin.saveSettings();
+          }),
+        );
+    }
   }
 }

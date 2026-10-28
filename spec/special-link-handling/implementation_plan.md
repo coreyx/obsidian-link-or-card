@@ -45,7 +45,7 @@ None at this time.
   - **YouTube:** the channel's handle in the card's `handle` line.
 
 #### [MODIFY] `src/settings.ts`
-- [ ] **TASK-3:** Show the settings in both versions of the tab:
+- [x] **TASK-3:** Show the settings in both versions of the tab:
   - **Obsidian 1.13 and later (`getSettingDefinitions`):** the main toggle comes after the existing settings, then a group headed by the site list's heading, holding one toggle per site. The group's `visible` follows `specialLinkHandling`. `setControlValue` is overridden to save as before and then call `refreshDomState()`, so the list appears and disappears as the main toggle changes.
   - **Older versions (`display`):** the same toggles in the same order, with the site toggles indented under the main one. They're only drawn while it's on, and changing it redraws the tab.
 
