@@ -21,6 +21,13 @@ export interface Strings {
   settingIgnoredUrlsDesc: string;
   settingPreserveSelectionName: string;
   settingPreserveSelectionDesc: string;
+  settingSpecialLinksName: string;
+  settingSpecialLinksDesc: string;
+  settingSpecialSitesHeading: string;
+  settingRedditName: string;
+  settingRedditDesc: string;
+  settingYouTubeName: string;
+  settingYouTubeDesc: string;
 }
 
 const en: Strings = {
@@ -48,6 +55,16 @@ const en: Strings = {
     "One per line. A domain such as example.com also covers its subdomains; add a path, as in github.com/my-org, to cover only part of a site. Pasting a matching URL leaves it as it is.",
   settingPreserveSelectionName: "Preserve selection as title",
   settingPreserveSelectionDesc: "Whether to prefer selected text as title over fetched title when pasting.",
+  settingSpecialLinksName: "Special link handling",
+  settingSpecialLinksDesc:
+    "Gives links to the sites below their own handling, for details their pages don't give the plugin. Turn it off to treat every link like any other page.",
+  settingSpecialSitesHeading: "Sites with special handling",
+  settingRedditName: "Reddit",
+  settingRedditDesc:
+    "Titles posts and share links as they appear on Reddit, with the poster as the card's author, and subreddit pages as r/<subreddit>. This asks Reddit's oEmbed service about the post. Off, Reddit links are titled just \"Reddit\".",
+  settingYouTubeName: "YouTube",
+  settingYouTubeDesc:
+    "Stores the channel's @handle in the card's handle line. Off, cards still show the channel name, without the handle.",
 };
 
 const ja: Strings = {
@@ -75,6 +92,16 @@ const ja: Strings = {
     "1行に1つ入力します。example.com のようなドメインはサブドメインも対象になり、github.com/my-org のようにパスを付けるとサイトの一部だけが対象になります。一致するURLは貼り付けてもそのままになります。",
   settingPreserveSelectionName: "選択したテキストをタイトルにする",
   settingPreserveSelectionDesc: "貼り付けるとき、取得したタイトルよりも選択中のテキストを優先してタイトルにします。",
+  settingSpecialLinksName: "サイトごとの特別な処理",
+  settingSpecialLinksDesc:
+    "下のサイトへのリンクは、ページから取得できない情報を補うために特別に処理します。オフにすると、すべてのリンクを通常のページと同じように扱います。",
+  settingSpecialSitesHeading: "特別な処理をするサイト",
+  settingRedditName: "Reddit",
+  settingRedditDesc:
+    "投稿や共有リンクにRedditと同じタイトルを付け、カードの作成者を投稿者にします。サブレディットのページは r/<サブレディット名> になります。投稿の情報はRedditのoEmbedサービスから取得します。オフにすると、Redditのリンクのタイトルは「Reddit」だけになります。",
+  settingYouTubeName: "YouTube",
+  settingYouTubeDesc:
+    "チャンネルの@ハンドルをカードの handle 行に保存します。オフにしても、カードにはチャンネル名が表示されます（ハンドルは保存されません）。",
 };
 
 export function getStrings(locale: string): Strings {

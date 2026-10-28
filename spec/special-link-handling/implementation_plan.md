@@ -40,7 +40,7 @@ None at this time.
   - A `SpecialSites` type, `{ reddit: boolean; youtube: boolean }`, with `ALL_SPECIAL_SITES` (all `true`), and `specialSites(settings)`, which gives each site's setting, or all `false` when `specialLinkHandling` is off.
 
 #### [MODIFY] `src/i18n.ts`
-- [ ] **TASK-2:** Add English and Japanese strings for the main setting's name and description, the site list's heading, and each site's name and description:
+- [x] **TASK-2:** Add English and Japanese strings for the main setting's name and description, the site list's heading, and each site's name and description:
   - **Reddit:** post and share-link titles from Reddit, `u/<poster>` as the author, and `r/<subreddit>` for subreddit pages.
   - **YouTube:** the channel's handle in the card's `handle` line.
 
