@@ -13,13 +13,13 @@ import {
   locateNearest,
   titleInSelection,
 } from "./src/editorText";
-import { fetchMetadata } from "./src/fetchMetadata";
+import { DEFAULT_TIMEOUT_MS, fetchMetadata } from "./src/fetchMetadata";
 import type { Requester } from "./src/fetchMetadata";
 import { getStrings } from "./src/i18n";
 import type { Strings } from "./src/i18n";
 import { formatMarkdownLink } from "./src/markdownLink";
 import { LinkOrCardSettingTab } from "./src/settings";
-import { DEFAULT_SETTINGS, resolveSettings } from "./src/settingsData";
+import { DEFAULT_SETTINGS, resolveSettings, specialSites } from "./src/settingsData";
 import type { LinkOrCardSettings } from "./src/settingsData";
 import { isIgnoredUrl, parsePastedUrl, safeHttpUrl } from "./src/url";
 
@@ -330,7 +330,7 @@ export default class LinkOrCardPlugin extends Plugin {
       state.notice = new Notice(this.strings.fetching, 0);
     }, NOTICE_DELAY_MS);
     try {
-      return await fetchMetadata(url, request);
+      return await fetchMetadata(url, request, DEFAULT_TIMEOUT_MS, specialSites(this.settings));
     } finally {
       window.clearTimeout(timer);
       state.notice?.hide();
