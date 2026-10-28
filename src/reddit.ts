@@ -1,3 +1,5 @@
+import type { CardData } from "./cardBlock";
+
 /**
  * A Reddit page that gets its title another way than from the page itself.
  * `www.reddit.com` answers clients that aren't full browsers with a JavaScript
@@ -71,4 +73,66 @@ export function parseRedditUrl(url: string): RedditTarget | null {
   const subreddit = SUBREDDIT_PATH.exec(parsed.pathname);
   if (subreddit !== null) return { kind: "subreddit", subreddit: subreddit[1] ?? "" };
   return null;
+}
+
+/** What Reddit's oEmbed answer says about a post. */
+export interface RedditEmbed {
+  title: string;
+  /** The poster's username, without `u/`. */
+  author?: string;
+  /** The subreddit with its own capitalization, from the embed's link to it. */
+  subreddit?: string;
+}
+
+/**
+ * Reads oEmbed's JSON answer. Its `title` is plain text, not HTML, so it is used
+ * as it is apart from whitespace. The subreddit comes from the first
+ * `reddit.com/r/<name>` link in the embed HTML: that carries the subreddit's own
+ * capitalization, even for a lowercase URL, and names the post's real subreddit
+ * when the URL named another. Null for anything that isn't JSON or has no title.
+ */
+export function parseRedditOembed(text: string): RedditEmbed | null {
+  let data: unknown;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (typeof data !== "object" || data === null) return null;
+  const { title, author_name: authorName, html } = data as Record<string, unknown>;
+  if (typeof title !== "string") return null;
+  const embed: RedditEmbed = { title: title.replace(/\s+/g, " ").trim() };
+  if (embed.title === "") return null;
+  if (typeof authorName === "string" && authorName.trim() !== "") embed.author = authorName.trim();
+  const subreddit = typeof html === "string" ? /reddit\.com\/r\/(\w+)/i.exec(html)?.[1] : undefined;
+  if (subreddit !== undefined) embed.subreddit = subreddit;
+  return embed;
+}
+
+/** The bot check's page is titled just "Reddit", which says nothing about the post. */
+const hasRealTitle = (page: CardData | null): boolean =>
+  page?.title !== undefined && page.title.trim().toLowerCase() !== "reddit";
+
+/**
+ * The card data for a Reddit URL, from the normal page fetch (null if it failed)
+ * and the oEmbed answer (null if there was none or it failed). The page supplies
+ * the favicon and anything else it has; the bot check gives it nothing more.
+ * - A post with an oEmbed answer is titled `<title> - r/<Subreddit>` and its
+ *   author is `u/<poster>`.
+ * - A post without one keeps a real page title. Failing that, its title is
+ *   guessed from the URL's slug as `<slug words> - r/<sub>`, and with no slug the
+ *   page's result stands.
+ * - A subreddit page is titled `r/<sub>` as written in the URL.
+ * Null only when there is neither a page nor anything to title it with.
+ */
+export function redditMetadata(url: string, target: RedditTarget, page: CardData | null, embed: RedditEmbed | null): CardData | null {
+  const base: CardData = page ?? { url };
+  if (target.kind === "subreddit") return { ...base, title: `r/${target.subreddit}` };
+  if (embed !== null) {
+    const data: CardData = { ...base, title: `${embed.title} - r/${embed.subreddit ?? target.subreddit}` };
+    if (embed.author !== undefined) data.author = `u/${embed.author}`;
+    return data;
+  }
+  if (hasRealTitle(page) || target.slug === undefined) return page;
+  return { ...base, title: `${target.slug.replace(/_/g, " ").trim()} - r/${target.subreddit}` };
 }

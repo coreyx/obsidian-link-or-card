@@ -30,7 +30,7 @@ None at this time.
   - A post: `/r/<sub>/comments/<id>` with an optional slug and anything after it, such as a comment id. It returns the subreddit as written, the slug, and the oEmbed lookup URL. That URL is built from `https://www.reddit.com` plus the post's path, with the query and fragment dropped, so share-tracking parameters and `old.`/`m.` hosts don't matter.
   - A subreddit page: exactly `/r/<sub>` or `/r/<sub>/`.
   - Anything else, including share links, short links and user pages, returns null.
-- [ ] **TASK-2:** Add `redditTitle(page, url, request)`, which takes the result of the normal page fetch (or null) and returns the card data to use:
+- [x] **TASK-2:** Add `redditTitle(page, url, request)`, which takes the result of the normal page fetch (or null) and returns the card data to use:
   - Post: request the oEmbed URL and parse its JSON. The title is `<title> - <r/Sub>`, taking the subreddit's capitalisation from the `reddit.com/r/<Sub>` link in the response's `html` and falling back to the URL's. The author is `u/<author_name>`. Favicon and any other fields come from the page fetch.
   - Post whose oEmbed lookup fails (an error status, non-JSON, no title, or a timeout): when the page gave no title or just "Reddit", guess the title from the slug, with underscores as spaces, as `<slug words> - r/<sub>`. With no slug, keep the page's result.
   - Subreddit page: the title is `r/<sub>` as written in the URL.
