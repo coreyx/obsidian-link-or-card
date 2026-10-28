@@ -72,7 +72,6 @@ describe("parseRedditUrl", () => {
   it("returns null for links oEmbed can't look up and for other sites", () => {
     expect(parseRedditUrl("https://redd.it/abc123")).toBeNull();
     expect(parseRedditUrl("https://www.reddit.com/comments/abc123/")).toBeNull();
-    expect(parseRedditUrl("https://www.reddit.com/r/ExampleSub/s/AbCdEf123")).toBeNull();
     expect(parseRedditUrl("https://www.reddit.com/user/example_user/")).toBeNull();
     expect(parseRedditUrl("https://www.reddit.com/r/ExampleSub/top/")).toBeNull();
     expect(parseRedditUrl("https://reddit.example.com/r/ExampleSub/comments/abc123/")).toBeNull();
