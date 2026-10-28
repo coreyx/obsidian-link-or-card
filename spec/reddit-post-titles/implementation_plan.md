@@ -37,7 +37,7 @@ None at this time.
   - TSDoc explains the bot check and why oEmbed is used.
 
 #### [MODIFY] `src/fetchMetadata.ts`
-- [ ] **TASK-3:** In `fetchMetadata`, when `parseRedditUrl` matches, run the page request and the oEmbed request together, each under the existing timeout, and pass both through `redditTitle`. Every other URL works as before. A Reddit fetch returns null only when both requests fail and there's no slug or subreddit to fall back on.
+- [x] **TASK-3:** In `fetchMetadata`, when `parseRedditUrl` matches, run the page request and the oEmbed request together, each under the existing timeout, and pass both through `redditTitle`. Every other URL works as before. A Reddit fetch returns null only when both requests fail and there's no slug or subreddit to fall back on.
 
 ### Tests
 
