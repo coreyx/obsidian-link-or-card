@@ -14,8 +14,14 @@ A pasted Reddit post gets the title "Reddit". `www.reddit.com` sends clients tha
 > [!NOTE]
 > Reddit gives no description or thumbnail without passing the bot check, so a Reddit card shows the title, `u/<poster>` and the favicon, with no picture or summary.
 
+> [!IMPORTANT]
+> Share links (`/r/<sub>/s/<code>`, what Reddit's Share button copies) are looked up in two steps, one after the other: the page request, which Obsidian follows through the share link's redirect to the post, and then the oEmbed lookup for the post that page names. Each has its own 10-second timeout, so a share link can take up to twice as long as other links. Both requests go to reddit.com.
+
+> [!IMPORTANT]
+> The post behind a share link is read from the bot-check page Reddit sends, which names the post's path in the address of its form (`<form action="/r/<sub>/comments/<id>/<slug>…">`). That markup isn't documented and could change. If it does, share links go back to today's title, "Reddit"; nothing else breaks.
+
 > [!NOTE]
-> `redd.it/<id>` short links, bare `reddit.com/comments/<id>` links and app share links (`/r/<sub>/s/<code>`) can't be looked up: they lack the subreddit or the post slug, and oEmbed rejects them. They keep today's title.
+> `redd.it/<id>` short links and bare `reddit.com/comments/<id>` links can't be looked up: their bot-check page names only `/comments/<id>`, with no subreddit, and oEmbed rejects that. They keep today's title.
 
 ## Open Questions
 
@@ -57,6 +63,28 @@ None at this time.
 #### [MODIFY] `CHANGELOG.md`
 - [x] **TASK-6:** Add an `### Added` entry under `[Unreleased]` for Reddit post and subreddit titles.
 
+### Share links
+
+#### [MODIFY] `src/reddit.ts`
+- [ ] **TASK-7:** Recognize share links and read the post they lead to:
+  - `parseRedditUrl` returns `{ kind: "share", subreddit }` for `/r/<sub>/s/<code>` (with or without a trailing slash) on the same hosts, instead of null.
+  - Add `postInBotCheck(html)`, which returns the `RedditTarget` for the first form `action` in the page whose path is a post (`/r/<sub>/comments/<id>…`), parsed as if it were on www.reddit.com, or null when there is none.
+  - `redditMetadata` handles a share link whose post wasn't found by returning the page's result unchanged.
+
+#### [MODIFY] `src/fetchMetadata.ts`
+- [ ] **TASK-8:** For a share link, `fetchMetadata` requests the page as today, keeping its HTML, then looks for the post with `postInBotCheck`. When it finds one, it asks oEmbed about that post under its own timeout and builds the card with `redditMetadata` as for a pasted post, so a failed lookup falls back to the slug guess. The card keeps the share link as its `url`. When no post is found, or the page request fails, the result is what it is today.
+
+#### [MODIFY] `tests/reddit.test.ts`
+- [ ] **TASK-9:** Cover, with made-up data only:
+  - `parseRedditUrl` recognizes share links, with and without the trailing slash, and on `old.` hosts.
+  - `postInBotCheck` finds the post in a synthetic bot-check page, ignores a form whose action isn't a post, and returns null for a page with no form.
+  - A share link whose page names a post is titled `<title> - r/<Sub>` with `u/<poster>`, makes two requests in order, and keeps the share link as the card's `url`.
+  - When the oEmbed lookup fails, a share link falls back to the slug guess from the page's form.
+  - When the page names no post, or the page request fails, a share link keeps today's result and no oEmbed request is made.
+
+#### [MODIFY] `README.md` and `CHANGELOG.md`
+- [ ] **TASK-10:** Update the Reddit notes in both: share links get the post's title, can take longer, and short links and bare `/comments/<id>` links still can't be looked up.
+
 ## Verification Plan
 
 ### Automated Tests
@@ -72,3 +100,4 @@ In a vault with this build installed, copy the URL of any Reddit post, then:
 3. Paste the same post's URL with `old.reddit.com` as the host. It gets the same title.
 4. Paste a subreddit URL such as `https://www.reddit.com/r/ObsidianMD/`. It becomes a link titled `r/ObsidianMD`.
 5. Paste a `redd.it` short link. It gets today's title, which is usually "Reddit".
+6. On a Reddit post, use **Share → Copy link** and paste the result, which looks like `https://www.reddit.com/r/<subreddit>/s/<code>`. With **Link**, it becomes `[<post title> - r/<subreddit>](<share link>)`; with **Card**, the card also shows `u/<poster>`.
