@@ -61,4 +61,4 @@ In a vault with this build installed, open **Settings → Link or Card**:
 **Result:** The maintainer ran all 7 steps in Obsidian, and all 7 passed.
 
 ## Follow-ups
-- **Older Obsidian versions:** the settings tab for versions before 1.13 has no automated test, and these steps were run on one Obsidian install, so that tab may not have been exercised.
+None.
