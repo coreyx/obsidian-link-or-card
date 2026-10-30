@@ -38,7 +38,7 @@ In a vault with this build installed and **When pasting a URL** set to **Link**,
 2. On a new line, type ``` ``a` ``` and paste. The bare URL is inserted.
 3. On a new line, type ``use `foo `` and paste. The bare URL is inserted, as before.
 
-**Result:** Not yet run.
+**Result:** The maintainer ran all 3 steps in Obsidian, and all 3 passed. In step 3, the editor had added the closing backtick automatically, so the line ended up as ``use `foohttps://example.com` ``, with the plain URL inside the inline code. The URL stays plain because only the text before the cursor is checked, and the backtick there has no partner yet.
 
 ## Follow-ups
 - **Unmatched runs:** a backtick run with no partner before the cursor counts as code still being typed. So in ``` ``a `b` c ``` the paste is left alone, though CommonMark would render the `` `` `` as plain text when nothing on the line closes it. This was accepted in the plan, since the result is a plain paste.
