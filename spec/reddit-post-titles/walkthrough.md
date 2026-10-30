@@ -79,7 +79,7 @@ Run by the user in a test vault with this build installed, copying the URL of a 
 3. Paste the same post's URL with `old.reddit.com` as the host. It gets the same title. **Passed**
 4. Paste a subreddit URL such as `https://www.reddit.com/r/ObsidianMD/`. It becomes a link titled `r/ObsidianMD`. **Passed**
 5. Paste a `redd.it` short link. It gets today's title, which is usually "Reddit". **Passed:** the link read "Reddit".
-6. On a Reddit post, use **Share → Copy link** and paste the result, which looks like `https://www.reddit.com/r/<subreddit>/s/<code>`. With **Link**, it becomes `[<post title> - r/<subreddit>](<share link>)`; with **Card**, the card also shows `u/<poster>`. **Not yet run.**
+6. On a Reddit post, use **Share → Copy link** and paste the result, which looks like `https://www.reddit.com/r/<subreddit>/s/<code>`. With **Link**, it becomes `[<post title> - r/<subreddit>](<share link>)`; with **Card**, the card also shows `u/<poster>`. **Passed**
 
 ## Follow-ups
 - **Deleted posts:** oEmbed titles a deleted post `[deleted by user]`, which this change would show as `[deleted by user] - r/<subreddit>`. The URL's slug still holds the original title words, so a deleted post could take the slug guess instead.

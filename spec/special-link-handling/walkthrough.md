@@ -58,5 +58,7 @@ In a vault with this build installed, open **Settings → Link or Card**:
 6. With **YouTube** off, paste a YouTube video's URL as a **Card**. The card shows the channel name under the title, and its source has no `handle:` line. Turn **YouTube** on and paste it again: the source has the `handle:` line.
 7. Restart Obsidian. The settings are as you left them.
 
+**Result:** The maintainer ran all 7 steps in Obsidian, and all 7 passed.
+
 ## Follow-ups
-- **Group visibility in 1.13:** the API says `refreshDomState()` re-evaluates every `visible` predicate, and both the group and its toggles have one. If the group's heading stays when the main toggle is turned off (manual step 2), redrawing with `display()` would be the fix.
+- **Older Obsidian versions:** the settings tab for versions before 1.13 has no automated test, and these steps were run on one Obsidian install, so that tab may not have been exercised.

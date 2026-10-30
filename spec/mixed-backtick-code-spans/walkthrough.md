@@ -38,6 +38,8 @@ In a vault with this build installed and **When pasting a URL** set to **Link**,
 2. On a new line, type ``` ``a` ``` and paste. The bare URL is inserted.
 3. On a new line, type ``use `foo `` and paste. The bare URL is inserted, as before.
 
+**Result:** Not yet run.
+
 ## Follow-ups
 - **Unmatched runs:** a backtick run with no partner before the cursor counts as code still being typed. So in ``` ``a `b` c ``` the paste is left alone, though CommonMark would render the `` `` `` as plain text when nothing on the line closes it. This was accepted in the plan, since the result is a plain paste.
-- **Not released:** the work is on `fix/mixed-backtick-code-spans` and isn't merged into `main` or released.
+- **Released:** this fix shipped in 0.7.1.
